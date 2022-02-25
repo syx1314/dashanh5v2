@@ -81,6 +81,7 @@
         name: 'SendPost',
         data() {
             return {
+                user:null,
                 title: '京东',
                 goAddress: '',
                 toAddress: '',
@@ -106,6 +107,13 @@
             titleView
         },
         created() {
+            this.user = local.getUser();
+            console.dir(this.user)
+            console.log('登录信息：'+this.user.customer.id)
+            if (!this.user) {
+                //需要登录
+                return
+            }
             if (this.$route.query.type) {
                 console.log('类型' + this.$route.query.type)
                 this.type = this.$route.query.type;
@@ -137,13 +145,13 @@
             estimateprice() {
                 let data = {
                     'weight': this.weight,
-                    'sendAddress': this.sendAddress['province'] + this.sendAddress['city'] + this.sendAddress['county']  + this.sendAddress['town'] + this.sendAddress['detail'],
-                    'receiveAddress': this.receiveAddres['province'] + this.receiveAddres['city'] +  this.receiveAddres['county'] +  this.receiveAddres['town'] +  this.receiveAddres['detail'],
+                    'sendAddress': this.sendAddress['province'] + this.sendAddress['city'] + this.sendAddress['county'] + this.sendAddress['town'] + this.sendAddress['detail'],
+                    'receiveAddress': this.receiveAddres['province'] + this.receiveAddres['city'] + this.receiveAddres['county'] + this.receiveAddres['town'] + this.receiveAddres['detail'],
                     'type': this.type
                 }
                 this.$post('/Expressorder/estimateprice', JSON.stringify(data))
                     .then((res) => {
-                        console.dir( res)
+                        console.dir(res)
                         if (!this.isString(res.data)) {
                             this.show = true;
                             this.priceInfo = res.data;
@@ -201,9 +209,10 @@
                 }
                 // this.show = false
                 let order = {
+                    'userid': this.user.customer.id,
                     'orderSendTime': '',
-                    'senderText': this.sendName + this.sendPhone + this.sendAddress['province'] + this.sendAddress['city'] + this.sendAddress['county']  + this.sendAddress['town'] + this.sendAddress['detail'],
-                    'receiveText': this.receiveName + this.receivePhone + this.receiveAddres['province'] + this.receiveAddres['city'] +  this.receiveAddres['county'] +  this.receiveAddres['town'] +  this.receiveAddres['detail'],
+                    'senderText': this.sendName + this.sendPhone + this.sendAddress['province'] + this.sendAddress['city'] + this.sendAddress['county'] + this.sendAddress['town'] + this.sendAddress['detail'],
+                    'receiveText': this.receiveName + this.receivePhone + this.receiveAddres['province'] + this.receiveAddres['city'] + this.receiveAddres['county'] + this.receiveAddres['town'] + this.receiveAddres['detail'],
                     'senderName': this.sendName,
                     'senderCity': this.sendAddress['city'],
                     'senderAddress': this.sendAddress['county'] + this.sendAddress['town'] + this.sendAddress['detail'],
@@ -223,9 +232,31 @@
                 this.$post('/Expressorder/create_order', JSON.stringify(order)).then((res) => {
                     this.show = true
                     console.dir(res)
+                    // 创建订单成功 生成支付 去发起支付
+                    this.topay(res['data'], 1)
                 })
             },
+            topay($order_id, $paytype) {
+                this.$fetch('/Expressorder/topay', {
+                    "order_id": $order_id,
+                    "paytype": $paytype
+                }).then((res) => {
+                    this.show = true
+                    console.dir(res)
+                    // 创建订单成功 生成支付 去发起支付
+                    this.onBridgeReady(res['data'])
 
+                })
+            },
+            onBridgeReady($payStr) {
+                WeixinJSBridge.invoke('getBrandWCPayRequest', $payStr,
+                    function (res) {
+                        if (res.err_msg == "get_brand_wcpay_request:ok") {
+                            // 使用以上方式判断前端返回,微信团队郑重提示：
+                            //res.err_msg将在用户支付成功后返回ok，但并不保证它绝对可靠。
+                        }
+                    });
+            },
             createOrder() {
                 if (!this.shopName || !this.wight) {
                     alert('请输入商品名字 或者重量')

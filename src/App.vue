@@ -27,4 +27,10 @@ export default {
 li {
   list-style: none;
 }
+.fl {
+    float: left;
+}
+.fr {
+    float: right;
+}
 </style>

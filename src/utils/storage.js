@@ -3,14 +3,20 @@
 // nodejs 基础
 const storage = {
 
-  set (key, value) {
+  set(key, value) {
     localStorage.setItem(key, JSON.stringify(value))
   },
-  get (key) {
+  get(key) {
     return JSON.parse(localStorage.getItem(key))
   },
-  remove (key) {
+  remove(key) {
     localStorage.removeItem(key)
+  },
+  getUser() {
+    return this.get('user')
+  },
+  saveUser($data) {
+    this.set('user',$data);
   }
 
 }

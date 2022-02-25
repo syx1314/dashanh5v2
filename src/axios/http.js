@@ -1,36 +1,41 @@
 import axios from 'axios'
-
+import local from '../utils/storage'
 axios.defaults.timeout = 5000
-axios.defaults.baseURL = '/api'
+
+if (process.env.NODE_ENV === 'development') {
+  // 开发环境
+  axios.defaults.baseURL = '/api'
+} else if (process.env.NODE_ENV === 'production') {
+  // 生产环境
+  axios.defaults.baseURL = 'http://81.68.198.45/api.php/' // 这里是线上api请求地址
+}
 // http request 拦截器
-axios.interceptors.request.use(
-  config => {
-    // const token = getCookie('名称');注意使用的时候需要引入cookie方法，推荐js-cookie
-    // config.data = JSON.stringify(config.data)
-    // if(token){
-    //   config.params = {'token':token}
-    // }
-    return config
-  },
-  error => {
-    return Promise.reject(error)
+axios.interceptors.request.use((config) => {
+  console.log('请求参数：', config)
+  const $user = local.getUser()
+  if ($user) {
+    // eslint-disable-next-line no-param-reassign
+    config.headers.Authorization = $user.access_token
   }
+  return config
+}, (error) => {
+  Promise.reject(error)
+}
 )
 
 // http response 拦截器
 axios.interceptors.response.use(
-  response => {
+  (response) => {
     if (response.data.errCode === 2) {
       // router.push({
       //   path: '/login',
       //   querry: {redirect: router.currentRoute.fullPath}// 从哪个页面跳转
       // })
     }
+    console.log('返回结果：', response)
     return response
   },
-  error => {
-    return Promise.reject(error)
-  }
+  error => Promise.reject(error)
 )
 
 /**
@@ -40,15 +45,15 @@ axios.interceptors.response.use(
  * @returns {Promise}
  */
 
-export function fetch (url, params = {}) {
+export function fetch(url, params = {}) {
   return new Promise((resolve, reject) => {
     axios.get(url, {
-      params: params
+      params
     })
-      .then(response => {
+      .then((response) => {
         resolve(response.data)
       })
-      .catch(err => {
+      .catch((err) => {
         reject(err)
       })
   })
@@ -61,12 +66,12 @@ export function fetch (url, params = {}) {
  * @returns {Promise}
  */
 
-export function post (url, data = {}) {
+export function post(url, data = {}) {
   return new Promise((resolve, reject) => {
     axios.post(url, data)
-      .then(response => {
+      .then((response) => {
         resolve(response.data)
-      }, err => {
+      }, (err) => {
         reject(err)
       })
   })
@@ -79,12 +84,12 @@ export function post (url, data = {}) {
  * @returns {Promise}
  */
 
-export function patch (url, data = {}) {
+export function patch(url, data = {}) {
   return new Promise((resolve, reject) => {
     axios.patch(url, data)
-      .then(response => {
+      .then((response) => {
         resolve(response.data)
-      }, err => {
+      }, (err) => {
         reject(err)
       })
   })
@@ -97,12 +102,12 @@ export function patch (url, data = {}) {
  * @returns {Promise}
  */
 
-export function put (url, data = {}) {
+export function put(url, data = {}) {
   return new Promise((resolve, reject) => {
     axios.put(url, data)
-      .then(response => {
+      .then((response) => {
         resolve(response.data)
-      }, err => {
+      }, (err) => {
         reject(err)
       })
   })

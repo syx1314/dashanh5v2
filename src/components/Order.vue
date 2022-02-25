@@ -1,97 +1,158 @@
 <template>
-   <div class="bb">
-     <div class="title">我的订单</div>
-     <van-pull-refresh v-model="refreshing" @refresh="onRefresh">
-       <van-list
-         v-model="loading"
-         :finished="finished"
-         finished-text="没有更多了"
-         @load="onLoad"
-       >
-         <div class="order_item van-clearfix" v-for="(order,index) in list" :key="index" :title="index" >
-           <span>运单号码：{{order.waybill}}</span>
-           <span>寄件人：{{order.sender }} {{order.senderMobile}}</span>
-           <span>寄件人地址：{{order.senderAddress}}}</span>
-           <span>收件人：{{order.receiver}}  {{order.receiverMobile}}</span>
-           <span>收件人地址：{{order.receiveAddress}}</span>
-           <span>下单重量:{{order.weight}}kg   计费重量{{order.realWeight}}kg</span>
-           <div>
-             <span>运费明细</span>
-             <span>快递费{{order.freightSub}}  保价费{{order.freightInsured}} 耗材费{{freightHaocai}}</span>
-           </div>
-           <div>
-             <span>收取明细</span>
-             <span>总费{{order.customerFreight}}  下单费({{order.customerFreightType}})</span>
-           </div>
-         </div>
-       </van-list>
-     </van-pull-refresh>
-   </div>
+    <div class="bb">
+        <common-title v-bind:title="title"/>
+        <van-pull-refresh v-model="refreshing" @refresh="onRefresh">
+            <van-list
+                    v-model="loading"
+                    :finished="finished"
+                    finished-text="没有更多了"
+                    @load="onLoad"
+                    offset="1500"
+            >
+                <div class="order_item van-clearfix" v-for="(order,index) in list" :key="index" :title="index">
+                    <div class="hd">
+                        <span>圆通快递：{{ order.trackingNum }}1231313131</span>
+                        <span>复制单号 </span>
+                    </div>
+                    <div class="bd van-clearfix">
+                         <div class="left_box fl">
+                             <div class="cityName">{{order.senderCity }}</div>
+                             <div class="userName">{{ order.sender_name }}</div>
+                         </div>
+                         <div class="center_box">
+                               <span>{{order.statusName}}</span>
+                              <van-image :src="arrowRight" />
+                         </div>
+                        <div class="right_box fr">
+                            <div class="cityName">{{order.receiveCity }}</div>
+                            <div class="userName">{{ order.receiveName }}</div>
+                        </div>
+                    </div>
+                    <div class="bottom van-clearfix">
+                        <div>
+                            <span>{{ order.create_time }}</span>
+                            <span class="price_box fr"><span class="price">￥{{order.totalPrice}}</span></span>
+                        </div>
+                        <div class="van-clearfix">
+                            <span class="payOutWeight ">补差价</span>
+                        </div>
+                    </div>
+                </div>
+            </van-list>
+        </van-pull-refresh>
+    </div>
 </template>
 
 <script>
-
-export default {
-  name: 'Order',
-  data () {
-    return {
-      list: [],
-      loading: false,
-      finished: false,
-      refreshing: false
-    }
-  },
-  methods: {
-    onLoad () {
-      this.$fetch('/jdserver2/api/v1/order/getLinkOrderListPage/1/30?billType=' + encodeURI('billType=全部&senderProvince=&senderMobile=&receiveProvince=&receiverMobile=&senderCity=&receiveCity=&sender=&receiver=&weight=&printStatus=all&id=&linkName=yywl-袁宇进&waybills=&shipbill=&startDate=2021-07-06&endDate=2021-07-14&pageIndex=1&pageSize=30'), '')
-        .then((res) => {
-          let re = res['result']
-          if (re && re['list']['records']) {
-            let recordList = re['list']['records']
-            for (let i = 0; i < recordList.length; i++) {
-              this.list.push(recordList[i])
+import  arrowRight from '../assets/icon_arrow_right.png'
+import CommonTitle  from "./CommonTitle";
+    export default {
+        name: 'Order',
+        data() {
+            return {
+                title:'我的订单',
+                list: [],
+                loading: false,
+                finished: false,
+                refreshing: false,
+                arrowRight
             }
-          }
-          console.dir(this.list)
-          this.loading = false
-          this.refreshing = false
-        })
-    },
-    onRefresh ( ) {
-      console.log('率先你')
-      // 清空列表数据
-      this.finished = false
+        },
+        created() {
+            this.onLoad()
+            console.log("智星了我")
+        },
+        components: {
+            CommonTitle
+        },
+        methods: {
+            onLoad() {
+                this.$fetch('Expressorder/queryOrder', '').then((res) => {
+                    if (res && res['errno'] == 0) {
+                        this.list = res['data'].data
+                    }
+                    if (this.list['current_page']== this.list['last_page']){
+                        this.finished =true
+                    }
+                    console.dir(this.list)
+                    this.loading = false
+                    this.refreshing = false
+                })
+            },
+            onRefresh() {
+                console.log('率先你')
+                // 清空列表数据
+                this.list =null;
+                this.finished = false
 
-      // 重新加载数据
-      // 将 loading 设置为 true，表示处于加载状态
-      this.loading = true
-      this.onLoad()
+                // 重新加载数据
+                // 将 loading 设置为 true，表示处于加载状态
+                this.loading = true
+                this.onLoad()
+            }
+        }
     }
-  }
-}
 </script>
 
-<style scoped>
-  .bb {
-    height: 100vh;
-  }
-  .title {
-    height: 3rem;
-    line-height: 3rem;
-    color: white;
-    background-color: #317ee7;
-    margin-bottom: 10px;
-    text-align: center;
-  }
+<style scoped lang="less">
+    .order_item {
+        background-color: white;
+        margin: 1rem 1rem 0;
+        padding: 10px;
+        border-radius: 0.5rem;
+    }
+    .left_box,
+    .right_box {
+        margin-top: 15px;
+        div {
+          width: 100px;
+        }
+      .cityName {
+        color: #000;
+        font-weight: bold;
+        font-size: 20px;
+        margin-bottom: 5px;
+      }
+      .userName {
+        color: #888;
+        font-size: 14px;
+      }
+    }
+    .right_box {
+      text-align: right;
+    }
+    .center_box {
+       position: absolute;
+       left: 50%;
+       width: 70px;
+       float: left;
+       margin:22px -35px 0;
+       text-align: center;
+    }
+    .bottom {
 
-  .order_item {
-    background-color: white;
-    margin: 1rem 1rem 0;
-    padding: 1rem;
-    border-radius: 0.5rem;
-  }
-  .order_item span {
-    display: block;
-    margin-bottom: 0.2rem;
-  }
+      margin-top: 20px;
+      .price {
+        color: red;
+        font-weight: 500;
+      }
+      div:nth-child(1) {
+        height: 35px;
+        line-height: 35px;
+        border-bottom: 1px solid #cccccc;
+      }
+      div:last-child {
+        position: relative;
+        height: 35px;
+      }
+      .payOutWeight {
+        position: absolute;
+        right: 0;
+        margin-top: 10px;
+        background-color: #317ee7;
+        color: white;
+        padding: 3px 8px;
+        border-radius: 15px;
+      }
+    }
 </style>

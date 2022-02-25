@@ -74,7 +74,6 @@ const webpackConfig = merge(baseWebpackConfig, {
     open: true, // 自动打开浏览器
     overlay: {warnings: false, errors: true}, // 展示全屏报错
     publicPath: '/',
-    proxy:  config.dev.proxyTable,
     quiet: true, // for FriendlyErrorsPlugin
     watchOptions: {
       poll: false,
