@@ -86,101 +86,105 @@
 </template>
 
 <script>
-    import order from './Order'
-    import local from '../utils/storage'
-    import {Dialog} from "vant";
-    export default {
-        name: 'HomePage',
-        data() {
-            return {
-                active: 0,// 0 主页   1 订单  2  我的
-                images: [
-                    'https://img01.yzcdn.cn/vant/apple-1.jpg',
-                    'https://img01.yzcdn.cn/vant/apple-2.jpg'
-                ]
-            }
-        },
-        components: {
-            order
-        },
-        created() {
-            // 获取配置的 公众号信息
-            // 获取公众号授权
-            //https://open.weixin.qq.com/connect/oauth2/authorize?
-            // appid=wx0d994eb4e6d18b96&redirect_uri=REDIRECT_URI&response_type=code&scope=snsapi_userinfo&state=STATE#wechat_redirect
-            // window.location ='https://open.weixin.qq.com/connect/oauth2/authorize?appid=wx0d994eb4e6d18b96&redirect_uri=REDIRECT_URI&response_type=code&scope=snsapi_userinfo&state=STATE#wechat_redirect'
-            // 第一步判断openid 是不是还存在
+import order from './Order'
+import local from '../utils/storage'
+import { Dialog } from 'vant'
 
-            // 判断是不是回调code redirect_uri/?code=CODE&state=STATE。
-            let user = local.getUser();
-            if (user) {
-                // 说明此时登陆着
-                console.dir(user)
-            }else {
-                // 未登录  去请求授权登录
-                let getParam =  window.location.href
-                if (getParam.indexOf('code')>-1)  {
-                    let code = this.getQueryVariable('code');
-                    this.$post('weixin/getOauthAccessToken?code='+code,'').then((res) => {
-                        //返回拼接好的授权地址
-                        console.dir(res['data']);
-                        Dialog.alert(
-                            {
-                                message:JSON.stringify(res)
-                            }
-                        )
-                        if (res['errno'] === 0) {
-                            //登录成功 保存用户信息
-                            local.saveUser(res['data'])
-                        }else {
-                            Dialog.alert(
-                                {
-                                    message:res['errmsg']
-                                }
-                            )
-                        }
-                    });
-                }else {
-                    // 请求后台接口 获取授权登录
-                        let redirect_uri = encodeURIComponent(window.location.href)
-                        console.log(encodeURIComponent(redirect_uri))
-                        this.$fetch('weixin/getOauthRedirect?redirect_uri='+redirect_uri,'').then((res) => {
-                            //返回拼接好的授权地址
-                            console.dir(res['data']);
-                            Dialog.alert(
-                                {
-                                    message:JSON.stringify(res)
-                                }
-                            )
-                            if (res['errno'] === 0) {
-                                // window.location = res['data'];
-                            }
-                        });
-                }
-            }
-        },
-        methods: {
-            toCreate($e) {
-                // 1 京东  2 京东得物 3德邦 4申通 5 圆通 6 极兔 7 顺丰
-                console.log('点击了我' + $e)
-                this.$router.push({path: 'sendPost', query: {type: $e}})
-            },
-            getQueryVariable($e) {
-                let query = window.location.href.split("?")[1];
-                let vars = query.split("&");
-                for (let i=0;i<vars.length;i++) {
-                    let pair = vars[i].split("=");
-                    if(pair[0] == $e){return pair[1];}
-                }
-                return(false);
-            }
-        },
-        watch: {
-            active() {
-                console.log(this.active)
-            }
-        }
+export default {
+  name: 'HomePage',
+  data() {
+    return {
+      active: 0, // 0 主页   1 订单  2  我的
+      images: [
+        'https://img01.yzcdn.cn/vant/apple-1.jpg',
+        'https://img01.yzcdn.cn/vant/apple-2.jpg'
+      ]
     }
+  },
+  components: {
+    order
+  },
+  created() {
+    // 获取配置的 公众号信息
+    // 获取公众号授权
+    // https://open.weixin.qq.com/connect/oauth2/authorize?
+    // eslint-disable-next-line max-len
+    // appid=wx0d994eb4e6d18b96&redirect_uri=REDIRECT_URI&response_type=code&scope=snsapi_userinfo&state=STATE#wechat_redirect
+    // window.location ='https://open.weixin.qq.com/connect/oauth2/authorize?appid=wx0d994eb4e6d18b96&redirect_uri=REDIRECT_URI&response_type=code&scope=snsapi_userinfo&state=STATE#wechat_redirect'
+    // 第一步判断openid 是不是还存在
+
+    // 判断是不是回调code redirect_uri/?code=CODE&state=STATE。
+    const user = local.getUser()
+    if (user) {
+      // 说明此时登陆着
+      console.dir(user)
+    } else {
+      // 未登录  去请求授权登录
+      const getParam = window.location.href
+      if (getParam.indexOf('code') > -1) {
+        const code = this.getQueryVariable('code')
+        this.$post(`weixin/getOauthAccessToken?code=${code}`, '').then((res) => {
+          // 返回拼接好的授权地址
+          console.dir(res.data)
+          Dialog.alert(
+            {
+              message: JSON.stringify(res)
+            }
+          )
+          if (res.errno === 0) {
+            // 登录成功 保存用户信息
+            local.saveUser(res.data)
+          } else {
+            Dialog.alert(
+              {
+                message: res.errmsg
+              }
+            )
+          }
+        })
+      } else {
+        // 请求后台接口 获取授权登录
+        // eslint-disable-next-line camelcase
+        const redirect_uri = encodeURIComponent(window.location.href)
+        console.log(encodeURIComponent(redirect_uri))
+        // eslint-disable-next-line camelcase
+        this.$fetch(`weixin/getOauthRedirect?redirect_uri=${redirect_uri}`, '').then((res) => {
+          // 返回拼接好的授权地址
+          console.dir(res.data)
+          Dialog.alert(
+            {
+              message: JSON.stringify(res)
+            }
+          )
+          if (res.errno === 0) {
+            // window.location = res['data'];
+          }
+        })
+      }
+    }
+  },
+  methods: {
+    toCreate($e) {
+      // 1 京东  2 京东得物 3德邦 4申通 5 圆通 6 极兔 7 顺丰
+      console.log(`点击了我${$e}`)
+      this.$router.push({ path: 'sendPost', query: { type: $e } })
+    },
+    getQueryVariable($e) {
+      const query = window.location.href.split('?')[1]
+      const vars = query.split('&')
+      for (let i = 0; i < vars.length; i++) {
+        const pair = vars[i].split('=')
+        if (pair[0] == $e) { return pair[1] }
+      }
+      return (false)
+    }
+  },
+  watch: {
+    active() {
+      console.log(this.active)
+    }
+  }
+}
 </script>
 
 <style lang="less" scoped>

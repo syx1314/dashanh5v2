@@ -74,270 +74,283 @@
 
 <script>
 
-    import local from '../utils/storage'
-    import titleView from './CommonTitle'
+import local from '../utils/storage'
+import titleView from './CommonTitle'
 
-    export default {
-        name: 'SendPost',
-        data() {
-            return {
-                user:null,
-                title: '京东',
-                goAddress: '',
-                toAddress: '',
-                sendName: '',
-                sendPhone: '',
-                sendAddress: '',
-                receiveName: '',
-                receivePhone: '',
-                receiveAddres: '',
-                priceObj: '',
-                shopName: '',
-                weight: 5,
-                maxPrice: 0,
-                channel: '',
-                myPrice: '',
-                show: false,
-                baojiaPrice: '',
-                type: 6,
-                priceInfo:''
-            }
-        },
-        components: {
-            titleView
-        },
-        created() {
-            this.user = local.getUser();
-            console.dir(this.user)
-            console.log('登录信息：'+this.user.customer.id)
-            if (!this.user) {
-                //需要登录
-                return
-            }
-            if (this.$route.query.type) {
-                console.log('类型' + this.$route.query.type)
-                this.type = this.$route.query.type;
-            }
-            this.sendAddress = local.get('sendAddress')
-            if (this.sendAddress) {
-                this.sendName = this.sendAddress['person']
-                this.sendPhone = this.sendAddress['phonenum']
-                this.goAddress = this.sendAddress['province'] + '/' + this.sendAddress['city'] + '/' + this.sendAddress['county'] + '/' + this.sendAddress['town'] + '/' + this.sendAddress['detail']
-            }
-            this.receiveAddres = local.get('receiveAddress')
-            if (this.receiveAddres) {
-                this.receiveName = this.receiveAddres['person']
-                this.receivePhone = this.receiveAddres['phonenum']
-                this.toAddress = this.receiveAddres['province'] + '/' + this.receiveAddres['city'] + '/' + this.receiveAddres['county'] + '/' + this.receiveAddres['town'] + '/' + this.receiveAddres['detail']
-            }
-            // if (this.sendAddress && this.receiveAddres) {
-            //   this.checkMatchChannel()
-            // }
-        },
-        methods: {
-            selSendAddress() {
-                this.$router.push({name: 'WriteAddress', query: {flag: 'go'}})
-            },
-            selReceiveAddress() {
-                this.$router.push({name: 'WriteAddress', query: {flag: 'to'}})
-            },
-            // 估算运费
-            estimateprice() {
-                let data = {
-                    'weight': this.weight,
-                    'sendAddress': this.sendAddress['province'] + this.sendAddress['city'] + this.sendAddress['county'] + this.sendAddress['town'] + this.sendAddress['detail'],
-                    'receiveAddress': this.receiveAddres['province'] + this.receiveAddres['city'] + this.receiveAddres['county'] + this.receiveAddres['town'] + this.receiveAddres['detail'],
-                    'type': this.type
-                }
-                this.$post('/Expressorder/estimateprice', JSON.stringify(data))
-                    .then((res) => {
-                        console.dir(res)
-                        if (!this.isString(res.data)) {
-                            this.show = true;
-                            this.priceInfo = res.data;
-                        }
-                    })
-            },
-
-            //是不是字符串
-            isString($obj) {
-                return Object.prototype.toString.call($obj) === "[object String]";
-            },
-            checkMatchChannel() {
-                let requestData = {
-                    'senderProvince': this.sendAddress['province'],
-                    'senderCity': this.sendAddress['city'],
-                    'senderCounty': this.sendAddress['county'],
-                    'senderTown': this.sendAddress['town'],
-                    'receiveProvince': this.receiveAddres['province'],
-                    'receiveCity': this.receiveAddres['city'],
-                    'receiveTown': this.receiveAddres['town'],
-                    'receiveCounty': this.receiveAddres['county'],
-                    'packageCount': 1, // 包裹数
-                    'weight': this.wight, // 重量 kg
-                    'tempReceiveAddress': this.toAddress, //
-                    'tempSendAddress': this.sendAddress, //
-                    'customerFreightType': '微信', //
-                    'linkName': 'yywl-袁宇进' //
-                }
-                this.$post('/jdserver2/checkMatchChannel', requestData)
-                    .then((res) => {
-                        console.log(res)
-                        let re = res['result']
-                        if (re && res['code'] === '1') {
-                            let priceObj = re['price']
-                            this.maxPrice = re['freight']
-                            this.priceObj = '首重' + priceObj['priceOne'] + '  2KG:' + priceObj['priceTwo'] + '  3KG:' + priceObj['priceThree'] + '\n4KG:' + priceObj['priceFour'] +
-                                '  5KG:' + priceObj['priceFive'] + '  续重:' + priceObj['priceMore']
-                            this.show = true
-                        } else {
-                            this.show = false
-                            alert(re)
-                        }
-                    })
-            },
-
-            //创建订单
-            createMyOrder() {
-                if (!this.shopName || !this.weight) {
-                    alert('请输入商品名字 或者重量2')
-                    return
-                }
-                if (!this.priceInfo) {
-                    alert('请输入运费1')
-                    return
-                }
-                // this.show = false
-                let order = {
-                    'userid': this.user.customer.id,
-                    'orderSendTime': '',
-                    'senderText': this.sendName + this.sendPhone + this.sendAddress['province'] + this.sendAddress['city'] + this.sendAddress['county'] + this.sendAddress['town'] + this.sendAddress['detail'],
-                    'receiveText': this.receiveName + this.receivePhone + this.receiveAddres['province'] + this.receiveAddres['city'] + this.receiveAddres['county'] + this.receiveAddres['town'] + this.receiveAddres['detail'],
-                    'senderName': this.sendName,
-                    'senderCity': this.sendAddress['city'],
-                    'senderAddress': this.sendAddress['county'] + this.sendAddress['town'] + this.sendAddress['detail'],
-                    'senderPhone': this.sendAddress['phonenum'],
-                    'receiveName': this.receiveName,
-                    'receiveAddress': this.receiveAddres['county'] + this.receiveAddres['town'] + this.receiveAddres['detail'],
-                    'receiveCity': this.receiveAddres['city'],
-                    'receivePhone': this.receiveAddres['phonenum'],
-                    'weight': this.weight,
-                    'goods': this.shopName,
-                    'insuredValue': 0,
-                    'guaranteeValueAmount': 0,
-                    'remark': '',
-                    'sadd': this.sendAddress['detail'],
-                    'type': this.type,
-                }
-                this.$post('/Expressorder/create_order', JSON.stringify(order)).then((res) => {
-                    this.show = true
-                    console.dir(res)
-                    // 创建订单成功 生成支付 去发起支付
-                    this.topay(res['data'], 1)
-                })
-            },
-            topay($order_id, $paytype) {
-                this.$fetch('/Expressorder/topay', {
-                    "order_id": $order_id,
-                    "paytype": $paytype
-                }).then((res) => {
-                    this.show = true
-                    console.dir(res)
-                    // 创建订单成功 生成支付 去发起支付
-                    this.onBridgeReady(res['data'])
-
-                })
-            },
-            onBridgeReady($payStr) {
-                WeixinJSBridge.invoke('getBrandWCPayRequest', $payStr,
-                    function (res) {
-                        if (res.err_msg == "get_brand_wcpay_request:ok") {
-                            // 使用以上方式判断前端返回,微信团队郑重提示：
-                            //res.err_msg将在用户支付成功后返回ok，但并不保证它绝对可靠。
-                        }
-                    });
-            },
-            createOrder() {
-                if (!this.shopName || !this.wight) {
-                    alert('请输入商品名字 或者重量')
-                    return
-                }
-                if (!this.priceInfo) {
-                    alert('请输入运费')
-                    return
-                }
-                this.show = false
-                let order = {
-                    'shopbill': null,
-                    'user': null,
-                    'sender': this.sendAddress['contact'], // 发见人
-                    'senderCompany': null,
-                    'senderMobile': this.sendAddress['mobile'],
-                    'senderTel': null,
-                    'senderProvince': this.sendAddress['province'],
-                    'senderCity': this.sendAddress['city'],
-                    'senderCounty': this.sendAddress['county'],
-                    'senderTown': this.sendAddress['town'],
-                    'senderLocation': this.sendAddress['address'],
-                    'senderAddress': this.sendAddress['province'] + this.sendAddress['city'] + this.sendAddress['county'] + (this.sendAddress['town'] ? this.sendAddress['town'] : '') + this.sendAddress['address'],
-                    'warehouseCode': null,
-                    'receiver': this.receiveAddres['contact'],
-                    'receiveCompany': null,
-                    'receiverMobile': this.receiveAddres['mobile'],
-                    'receiveTel': null,
-                    'receiveProvince': this.receiveAddres['province'],
-                    'receiveCity': this.receiveAddres['city'],
-                    'receiveTown': this.receiveAddres['town'],
-                    'receiveCounty': this.receiveAddres['county'],
-                    'receiveLocation': this.receiveAddres['address'],
-                    'receiveAddress': this.receiveAddres['province'] + this.receiveAddres['city'] + this.receiveAddres['county'] + (this.receiveAddres['town'] ? this.receiveAddres['town'] : '') + this.receiveAddres['address'],
-                    'packageCount': 1, // 包裹数量
-                    'payType': true,
-                    'promiseTimeType': true,
-                    'itemName': this.shopName,
-                    'goodsCount': null,
-                    'vloumLong': null,
-                    'vloumWidth': null,
-                    'vloumHeight': null,
-                    'weight': this.wight,
-                    'baoxian': true,
-                    'billRemark': null,
-                    'insuredValue': false,
-                    'insured': null,
-                    'collectionValue': false,
-                    'collectionMoney': null,
-                    'tempReceiveAddress': this.receiveAddres['province'] + this.receiveAddres['city'] + this.receiveAddres['county'] + this.receiveAddres['address'] + this.receiveAddres['contact'] + this.receiveAddres['mobile'],
-                    'tempSendAddress': this.sendAddress['province'] + this.sendAddress['city'] + this.sendAddress['county'] + this.sendAddress['address'] + this.sendAddress['contact'] + this.sendAddress['mobile'],
-                    'customerFreight': this.myPrice,
-                    'customerFreightType': this.channel,
-                    'linkName': 'yywl-袁宇进'
-                }
-                this.$post('/jdserver2/addBill', order).then((res) => {
-                    this.show = true
-                    let re = res['result']
-                    if (re) {
-                        let waybill = re['waybill'] // 物流单号
-                        console.log(waybill)
-                    }
-                })
-            },
-            // 数据完整
-            isComplete() {
-                return this.sendName && this.sendPhone && this.goAddress && this.receiveName && this.receivePhone && this.toAddress && this.weight
-            }
-        },
-        watch: {
-            weight() {
-                console.log('监听有反应')
-                if (this.isComplete()) {
-                    this.estimateprice()
-                }
-            },
-            listenInfo() {
-
-            }
-        }
+export default {
+  name: 'SendPost',
+  data() {
+    return {
+      user: null,
+      title: '京东',
+      goAddress: '',
+      toAddress: '',
+      sendName: '',
+      sendPhone: '',
+      sendAddress: '',
+      receiveName: '',
+      receivePhone: '',
+      receiveAddres: '',
+      priceObj: '',
+      shopName: '',
+      weight: 5,
+      maxPrice: 0,
+      channel: '',
+      myPrice: '',
+      show: false,
+      baojiaPrice: '',
+      type: 6,
+      priceInfo: ''
     }
+  },
+  components: {
+    titleView
+  },
+  created() {
+    this.user = local.getUser()
+    console.dir(this.user)
+    console.log(`登录信息：${this.user.customer.id}`)
+    if (!this.user) {
+      // 需要登录
+      return
+    }
+    if (this.$route.query.type) {
+      console.log(`类型${this.$route.query.type}`)
+      this.type = this.$route.query.type
+    }
+    this.sendAddress = local.get('sendAddress')
+    if (this.sendAddress) {
+      this.sendName = this.sendAddress.person
+      this.sendPhone = this.sendAddress.phonenum
+      this.goAddress = `${this.sendAddress.province}/${this.sendAddress.city}/${this.sendAddress.county}/${this.sendAddress.town}/${this.sendAddress.detail}`
+    }
+    this.receiveAddres = local.get('receiveAddress')
+    if (this.receiveAddres) {
+      this.receiveName = this.receiveAddres.person
+      this.receivePhone = this.receiveAddres.phonenum
+      this.toAddress = `${this.receiveAddres.province}/${this.receiveAddres.city}/${this.receiveAddres.county}/${this.receiveAddres.town}/${this.receiveAddres.detail}`
+    }
+    // if (this.sendAddress && this.receiveAddres) {
+    //   this.checkMatchChannel()
+    // }
+  },
+  methods: {
+    selSendAddress() {
+      this.$router.push({ name: 'WriteAddress', query: { flag: 'go' } })
+    },
+    selReceiveAddress() {
+      this.$router.push({ name: 'WriteAddress', query: { flag: 'to' } })
+    },
+    // 估算运费
+    estimateprice() {
+      const data = {
+        weight: this.weight,
+        // eslint-disable-next-line max-len
+        sendAddress: this.sendAddress.province + this.sendAddress.city + this.sendAddress.county + this.sendAddress.town + this.sendAddress.detail,
+        // eslint-disable-next-line max-len
+        receiveAddress: this.receiveAddres.province + this.receiveAddres.city + this.receiveAddres.county + this.receiveAddres.town + this.receiveAddres.detail,
+        type: this.type
+      }
+      this.$post('/Expressorder/estimateprice', JSON.stringify(data))
+        .then((res) => {
+          console.dir(res)
+          if (!this.isString(res.data)) {
+            this.show = true
+            this.priceInfo = res.data
+          }
+        })
+    },
+
+    // 是不是字符串
+    isString($obj) {
+      return Object.prototype.toString.call($obj) === '[object String]'
+    },
+    checkMatchChannel() {
+      const requestData = {
+        senderProvince: this.sendAddress.province,
+        senderCity: this.sendAddress.city,
+        senderCounty: this.sendAddress.county,
+        senderTown: this.sendAddress.town,
+        receiveProvince: this.receiveAddres.province,
+        receiveCity: this.receiveAddres.city,
+        receiveTown: this.receiveAddres.town,
+        receiveCounty: this.receiveAddres.county,
+        packageCount: 1, // 包裹数
+        weight: this.wight, // 重量 kg
+        tempReceiveAddress: this.toAddress, //
+        tempSendAddress: this.sendAddress, //
+        customerFreightType: '微信', //
+        linkName: 'yywl-袁宇进' //
+      }
+      this.$post('/jdserver2/checkMatchChannel', requestData)
+        .then((res) => {
+          console.log(res)
+          const re = res.result
+          if (re && res.code === '1') {
+            const priceObj = re.price
+            this.maxPrice = re.freight
+            this.priceObj = `首重${priceObj.priceOne}  2KG:${priceObj.priceTwo}  3KG:${priceObj.priceThree}\n4KG:${priceObj.priceFour
+            }  5KG:${priceObj.priceFive}  续重:${priceObj.priceMore}`
+            this.show = true
+          } else {
+            this.show = false
+            alert(re)
+          }
+        })
+    },
+
+    // 创建订单
+    createMyOrder() {
+      if (!this.shopName || !this.weight) {
+        alert('请输入商品名字 或者重量2')
+        return
+      }
+      if (!this.priceInfo) {
+        alert('请输入运费1')
+        return
+      }
+      // this.show = false
+      const order = {
+        userid: this.user.customer.id,
+        orderSendTime: '',
+        // eslint-disable-next-line max-len
+        senderText: this.sendName + this.sendPhone + this.sendAddress.province + this.sendAddress.city + this.sendAddress.county + this.sendAddress.town + this.sendAddress.detail,
+        // eslint-disable-next-line max-len
+        receiveText: this.receiveName + this.receivePhone + this.receiveAddres.province + this.receiveAddres.city + this.receiveAddres.county + this.receiveAddres.town + this.receiveAddres.detail,
+        senderName: this.sendName,
+        senderCity: this.sendAddress.city,
+        senderAddress: this.sendAddress.county + this.sendAddress.town + this.sendAddress.detail,
+        senderPhone: this.sendAddress.phonenum,
+        receiveName: this.receiveName,
+        // eslint-disable-next-line max-len
+        receiveAddress: this.receiveAddres.county + this.receiveAddres.town + this.receiveAddres.detail,
+        receiveCity: this.receiveAddres.city,
+        receivePhone: this.receiveAddres.phonenum,
+        weight: this.weight,
+        goods: this.shopName,
+        insuredValue: 0,
+        guaranteeValueAmount: 0,
+        remark: '',
+        sadd: this.sendAddress.detail,
+        type: this.type,
+      }
+      this.$post('/Expressorder/create_order', JSON.stringify(order)).then((res) => {
+        this.show = true
+        console.dir(res)
+        // 创建订单成功 生成支付 去发起支付
+        this.topay(res.data, 1)
+      })
+    },
+    // eslint-disable-next-line camelcase
+    topay($order_id, $paytype) {
+      this.$fetch('/Expressorder/topay', {
+        order_id: $order_id,
+        paytype: $paytype
+      }).then((res) => {
+        this.show = true
+        console.dir(res)
+        // 创建订单成功 生成支付 去发起支付
+        const payData = {
+          appId: res.data.appId,
+          timeStamp: `${res.data.timeStamp }`,
+          nonceStr: res.data.nonceStr,
+          package: res.data.package,
+          signType: res.data.signType,
+          paySign: res.data.sign
+        }
+        this.onBridgeReady(payData)
+      })
+    },
+    onBridgeReady($payStr) {
+      WeixinJSBridge.invoke('getBrandWCPayRequest', $payStr,
+        (res) => {
+          if (res.err_msg === 'get_brand_wcpay_request:ok') {
+            // 使用以上方式判断前端返回,微信团队郑重提示：
+            // res.err_msg将在用户支付成功后返回ok，但并不保证它绝对可靠。
+          }
+        })
+    },
+    createOrder() {
+      if (!this.shopName || !this.wight) {
+        alert('请输入商品名字 或者重量')
+        return
+      }
+      if (!this.priceInfo) {
+        alert('请输入运费')
+        return
+      }
+      this.show = false
+      const order = {
+        shopbill: null,
+        user: null,
+        sender: this.sendAddress.contact, // 发见人
+        senderCompany: null,
+        senderMobile: this.sendAddress.mobile,
+        senderTel: null,
+        senderProvince: this.sendAddress.province,
+        senderCity: this.sendAddress.city,
+        senderCounty: this.sendAddress.county,
+        senderTown: this.sendAddress.town,
+        senderLocation: this.sendAddress.address,
+        senderAddress: this.sendAddress.province + this.sendAddress.city + this.sendAddress.county + (this.sendAddress.town ? this.sendAddress.town : '') + this.sendAddress.address,
+        warehouseCode: null,
+        receiver: this.receiveAddres.contact,
+        receiveCompany: null,
+        receiverMobile: this.receiveAddres.mobile,
+        receiveTel: null,
+        receiveProvince: this.receiveAddres.province,
+        receiveCity: this.receiveAddres.city,
+        receiveTown: this.receiveAddres.town,
+        receiveCounty: this.receiveAddres.county,
+        receiveLocation: this.receiveAddres.address,
+        receiveAddress: this.receiveAddres.province + this.receiveAddres.city + this.receiveAddres.county + (this.receiveAddres.town ? this.receiveAddres.town : '') + this.receiveAddres.address,
+        packageCount: 1, // 包裹数量
+        payType: true,
+        promiseTimeType: true,
+        itemName: this.shopName,
+        goodsCount: null,
+        vloumLong: null,
+        vloumWidth: null,
+        vloumHeight: null,
+        weight: this.wight,
+        baoxian: true,
+        billRemark: null,
+        insuredValue: false,
+        insured: null,
+        collectionValue: false,
+        collectionMoney: null,
+        tempReceiveAddress: this.receiveAddres.province + this.receiveAddres.city + this.receiveAddres.county + this.receiveAddres.address + this.receiveAddres.contact + this.receiveAddres.mobile,
+        tempSendAddress: this.sendAddress.province + this.sendAddress.city + this.sendAddress.county + this.sendAddress.address + this.sendAddress.contact + this.sendAddress.mobile,
+        customerFreight: this.myPrice,
+        customerFreightType: this.channel,
+        linkName: 'yywl-袁宇进'
+      }
+      this.$post('/jdserver2/addBill', order).then((res) => {
+        this.show = true
+        const re = res.result
+        if (re) {
+          const waybill = re.waybill // 物流单号
+          console.log(waybill)
+        }
+      })
+    },
+    // 数据完整
+    isComplete() {
+      return this.sendName && this.sendPhone && this.goAddress && this.receiveName && this.receivePhone && this.toAddress && this.weight
+    }
+  },
+  watch: {
+    weight() {
+      console.log('监听有反应')
+      if (this.isComplete()) {
+        this.estimateprice()
+      }
+    },
+    listenInfo() {
+
+    }
+  }
+}
 </script>
 
 <style scoped lang="less">
