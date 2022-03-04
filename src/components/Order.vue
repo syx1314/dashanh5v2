@@ -9,10 +9,11 @@
                     @load="onLoad"
                     offset="1500"
             >
-                <div class="order_item van-clearfix" v-for="(order,index) in list" :key="index" :title="index">
+                <div class="order_item van-clearfix" v-for="(order,index) in list" :key="index"
+                     :title="index" @click="toDetail(order.id)">
                     <div class="hd">
-                        <span>圆通快递：{{ order.trackingNum }}1231313131</span>
-                        <span>复制单号 </span>
+                        <span>圆通快递:{{ order.trackingNum }}1231313131</span>
+                        <span class="fr">复制单号</span>
                     </div>
                     <div class="bd van-clearfix">
                          <div class="left_box fl">
@@ -89,6 +90,9 @@ import CommonTitle  from "./CommonTitle";
                 // 将 loading 设置为 true，表示处于加载状态
                 this.loading = true
                 this.onLoad()
+            },
+            toDetail($id) {
+                this.$router.push({ name: 'OrderDetails', query: { id: $id } })
             }
         }
     }
@@ -97,13 +101,16 @@ import CommonTitle  from "./CommonTitle";
 <style scoped lang="less">
     .order_item {
         background-color: white;
-        margin: 1rem 1rem 0;
-        padding: 10px;
-        border-radius: 0.5rem;
+        margin: 10px 10px 0;
+        padding: 15px;
+        border-radius: 10px;
+    }
+    .left_box {
+      margin-left: 30px;
     }
     .left_box,
     .right_box {
-        margin-top: 15px;
+        margin-top: 20px;
         div {
           width: 100px;
         }
@@ -120,6 +127,7 @@ import CommonTitle  from "./CommonTitle";
     }
     .right_box {
       text-align: right;
+      margin-right: 30px;
     }
     .center_box {
        position: absolute;

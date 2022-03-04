@@ -86,7 +86,7 @@
 </template>
 
 <script>
-import order from './Order'
+import order from '../components/Order'
 import local from '../utils/storage'
 import { Dialog } from 'vant'
 

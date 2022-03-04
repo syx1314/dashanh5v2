@@ -75,7 +75,7 @@
 <script>
 
 import local from '../utils/storage'
-import titleView from './CommonTitle'
+import titleView from '../components/CommonTitle'
 
 export default {
   name: 'SendPost',
@@ -93,6 +93,7 @@ export default {
       receiveAddres: '',
       priceObj: '',
       shopName: '',
+      packageNum: 1,
       weight: 5,
       maxPrice: 0,
       channel: '',
@@ -228,6 +229,7 @@ export default {
         receivePhone: this.receiveAddres.phonenum,
         weight: this.weight,
         goods: this.shopName,
+        packageNum: this.packageNum,
         insuredValue: 0,
         guaranteeValueAmount: 0,
         remark: '',

@@ -10,7 +10,9 @@ if (process.env.NODE_ENV === 'production') {
   new VConsole()
 }
 import { post, fetch, patch, put } from './axios/http'
-import { Tabbar, TabbarItem, PullRefresh, List, Stepper, Rate, RadioGroup, Radio, Field, Grid, GridItem, Swipe, SwipeItem, Lazyload, NoticeBar, Image as VanImage, Dialog } from 'vant'
+import { Tabbar, TabbarItem, PullRefresh, List, Stepper, Rate, RadioGroup
+  , Radio, Field, Grid, GridItem, Swipe, SwipeItem, Lazyload, NoticeBar, Image as VanImage, Dialog, Loading
+  , Step, Steps, Sticky, Popup, Overlay } from 'vant'
 
 Vue.use(Rate)
 Vue.use(Tabbar)
@@ -29,6 +31,12 @@ Vue.use(Lazyload)
 Vue.use(NoticeBar)
 Vue.use(VanImage)
 Vue.use(Dialog)
+Vue.use(Loading)
+Vue.use(Step)
+Vue.use(Steps)
+Vue.use(Sticky)
+Vue.use(Popup)
+Vue.use(Overlay)
 Vue.config.productionTip = false
 // 定义全局变量
 Vue.prototype.$post = post

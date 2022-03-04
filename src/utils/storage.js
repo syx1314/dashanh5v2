@@ -16,7 +16,7 @@ const storage = {
     return this.get('user')
   },
   saveUser($data) {
-    this.set('user',$data);
+    this.set('user', $data)
   }
 
 }

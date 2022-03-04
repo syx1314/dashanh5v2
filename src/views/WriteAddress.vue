@@ -20,7 +20,7 @@
 
 <script>
     import local from '../utils/storage'
-    import titleView from './CommonTitle'
+    import titleView from '../components/CommonTitle'
 
     export default {
         name: 'WriteAddress',

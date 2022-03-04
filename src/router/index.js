@@ -1,9 +1,15 @@
 import Vue from 'vue'
 import Router from 'vue-router'
+// eslint-disable-next-line import/extensions
 import HelloWorld from '@/components/HelloWorld'
-import SendPost from '@/components/SendPost'
-import WriteAddress from '@/components/WriteAddress'
-import HomePage from '@/components/HomePage'
+// eslint-disable-next-line import/extensions
+import SendPost from '@/views/SendPost'
+// eslint-disable-next-line import/extensions
+import WriteAddress from '@/views/WriteAddress'
+// eslint-disable-next-line import/extensions
+import HomePage from '@/views/HomePage'
+// eslint-disable-next-line import/extensions
+import OrderDetails from '@/views/OrderDetails'
 
 Vue.use(Router)
 
@@ -28,6 +34,11 @@ export default new Router({
       path: '/HomePage',
       name: 'HomePage',
       component: HomePage
-    }
+    },
+    {
+      path: '/OrderDetails',
+      name: 'OrderDetails',
+      component: OrderDetails
+    },
   ]
 })
