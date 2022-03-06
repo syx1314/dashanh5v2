@@ -87,9 +87,16 @@ export default {
       toAddress: '',
       sendName: '',
       sendPhone: '',
+      senderProvince: '',
+      senderCity: '',
+      senderCounty: '',
+      senderTown: '',
       sendAddress: '',
       receiveName: '',
-      receivePhone: '',
+      receiveProvince: '',
+      receiveCity: '',
+      receiveCounty: '',
+      receiveTown: '',
       receiveAddres: '',
       priceObj: '',
       shopName: '',
@@ -123,12 +130,20 @@ export default {
     if (this.sendAddress) {
       this.sendName = this.sendAddress.person
       this.sendPhone = this.sendAddress.phonenum
+      this.senderProvince = this.sendAddress.province
+      this.senderCity = this.sendAddress.city
+      this.senderCounty = this.sendAddress.county
+      this.senderTown = this.sendAddress.town
       this.goAddress = `${this.sendAddress.province}/${this.sendAddress.city}/${this.sendAddress.county}/${this.sendAddress.town}/${this.sendAddress.detail}`
     }
     this.receiveAddres = local.get('receiveAddress')
     if (this.receiveAddres) {
       this.receiveName = this.receiveAddres.person
       this.receivePhone = this.receiveAddres.phonenum
+      this.receiveProvince = this.receiveAddres.province
+      this.receiveCity = this.receiveAddres.city
+      this.receiveCounty = this.receiveAddres.county
+      this.receiveTown = this.receiveAddres.town
       this.toAddress = `${this.receiveAddres.province}/${this.receiveAddres.city}/${this.receiveAddres.county}/${this.receiveAddres.town}/${this.receiveAddres.detail}`
     }
     // if (this.sendAddress && this.receiveAddres) {
@@ -219,13 +234,19 @@ export default {
         // eslint-disable-next-line max-len
         receiveText: this.receiveName + this.receivePhone + this.receiveAddres.province + this.receiveAddres.city + this.receiveAddres.county + this.receiveAddres.town + this.receiveAddres.detail,
         senderName: this.sendName,
-        senderCity: this.sendAddress.city,
-        senderAddress: this.sendAddress.county + this.sendAddress.town + this.sendAddress.detail,
+        senderProvince: this.senderProvince,
+        senderCity: this.senderCity,
+        senderCounty: this.senderCounty,
+        senderTown: this.senderTown,
+        senderAddress: this.sendAddress.detail,
         senderPhone: this.sendAddress.phonenum,
         receiveName: this.receiveName,
         // eslint-disable-next-line max-len
-        receiveAddress: this.receiveAddres.county + this.receiveAddres.town + this.receiveAddres.detail,
-        receiveCity: this.receiveAddres.city,
+        receiveProvince: this.receiveProvince,
+        receiveCity: this.receiveCity,
+        receiveCounty: this.receiveCounty,
+        receiveTown: this.receiveTown,
+        receiveAddress: this.receiveAddres.detail,
         receivePhone: this.receiveAddres.phonenum,
         weight: this.weight,
         goods: this.shopName,
