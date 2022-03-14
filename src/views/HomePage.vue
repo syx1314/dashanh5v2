@@ -157,7 +157,7 @@ export default {
             }
           )
           if (res.errno === 0) {
-            // window.location = res['data'];
+            window.location = res['data'];
           }
         })
       }

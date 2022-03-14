@@ -33,6 +33,11 @@ axios.interceptors.response.use(
       // })
     }
     console.log('返回结果：', response)
+    if (response.data.errno === -1) {
+      // 登录过期 清除本地登录信息
+      local.remove('user')
+      this.$router.push({ name: 'HomePage' })
+    }
     return response
   },
   error => Promise.reject(error)
