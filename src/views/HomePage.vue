@@ -12,71 +12,102 @@
                     </van-swipe>
                 </div>
                 <div class="tips_box">
-                    <van-notice-bar left-icon="volume-o" :scrollable="false">
+                    <van-notice-bar left-icon="volume-o" :scrollable="false"    wrapable>
                         <van-swipe
                                 vertical
                                 class="notice-swipe"
-                                :autoplay="3000"
+                                :autoplay="5000"
                                 :show-indicators="false"
                         >
-                            <van-swipe-item>内容 1</van-swipe-item>
-                            <van-swipe-item>内容 2</van-swipe-item>
-                            <van-swipe-item>内容 3</van-swipe-item>
+                            <van-swipe-item v-for="(notice,index) in noticeList" :key="index">{{notice.content}}</van-swipe-item>
                         </van-swipe>
                     </van-notice-bar>
                 </div>
                 <div class="express_item">
-                    <van-grid square :column-num="3">
-                        <van-grid-item @click="toCreate(1)">
-                            <van-image src="https://www.yunyangwl.com/static/img/jd.49cebbd7.png"
-                                       width="70"
-                                       height="70"/>
-                        </van-grid-item>
-                        <van-grid-item @click="toCreate(2)">
-                            <van-image src="https://www.yunyangwl.com/static/img/dewu.b5730518.png"
-                                       width="70"
-                                       height="70"/>
-                        </van-grid-item>
-                        <van-grid-item @click="toCreate(3)">
-                            <van-image src="https://www.yunyangwl.com/static/img/db.2f23ac3c.png"
-                                       width="70"
-                                       height="70"/>
-                        </van-grid-item>
-                        <van-grid-item @click="toCreate(4)">
-                            <van-image src="https://www.yunyangwl.com/static/img/sto.a4d50e66.png"
-                                       width="70"
-                                       height="70"/>
-                        </van-grid-item>
-                        <van-grid-item @click="toCreate(5)">
-                            <van-image src="https://www.yunyangwl.com/static/img/yto.42d7d066.png"
-                                       width="70"
-                                       height="70"/>
-                        </van-grid-item>
-                        <van-grid-item @click="toCreate(6)">
-                            <van-image
-                                    width="70"
-                                    height="70"
-                                    src="https://www.yunyangwl.com/static/img/jt.a62ce4f0.png"/>
-                        </van-grid-item>
-                        <van-grid-item @click="toCreate(7)">
-                            <van-image
-                                    width="70"
-                                    height="70"
-                                    src="https://www.yunyangwl.com/static/img/sf.c0b4d72e.png"/>
-                        </van-grid-item>
+                    <p class="sub_title">快递优选</p>
+                    <van-grid square :column-num="2">
+                        <div class="grid_box" @click="toCreate(1)">
+                            <van-image :src="require('@/assets/icon_jjfs_jingdong.png')" class="fl"/>
+                            <div class="fl right_content">
+                                <p>京东快递</p>
+                                <p>取件较快</p>
+                            </div>
+                        </div >
+                        <div class="grid_box" @click="toCreate(2)">
+                            <van-image :src="require('@/assets/icon_jjfs_debang.png')" class="fl"/>
+                            <div class="fl right_content">
+                                <p>德邦快递</p>
+                                <p>取件快服务好</p>
+                            </div>
+                        </div >
+                        <div class="grid_box"  @click="toCreate(5)">
+                            <van-image :src="require('@/assets/icon_jjfs_shentong.png')" class="fl"/>
+                            <div class="fl right_content">
+                                <p>申通快递</p>
+                                <p>取件慢,接单慢</p>
+                            </div>
+                        </div >
+                        <div class="grid_box" @click="toCreate(6)">
+                            <van-image :src="require('@/assets/icon_jjfs_yuantong.png')" class="fl"/>
+                            <div class="fl right_content">
+                                <p>圆通快递</p>
+                                <p>取件揽收适中</p>
+                            </div>
+                        </div >
+                        <div class="grid_box" @click="toCreate(7)">
+                            <van-image :src="require('@/assets/icon_jjfs_dbhang.png')" class="fl"/>
+                            <div class="fl right_content">
+                                <p>德邦航空</p>
+                                <p>取件快，运输快</p>
+                            </div>
+                        </div >
+                        <div class="grid_box" @click="toCreate(8)">
+                            <van-image :src="require('@/assets/icon_jjfs_shunfeng.png')" class="fl"/>
+                            <div class="fl right_content">
+                                <p>顺丰快递</p>
+                                <p>取件快，运输快</p>
+                            </div>
+                        </div >
+                        <div class="grid_box" @click="toCreate(7)">
+                            <van-image :src="require('@/assets/icon_jjfs_jitu.png')" class="fl"/>
+                            <div class="fl right_content">
+                                <p>极兔快递</p>
+                                <p>取件较慢,有缺陷</p>
+                            </div>
+                        </div >
 
                     </van-grid>
+                </div>
+                <div class="article_box">
+                     <van-image :src="require('@/assets/icon_home_new_customer.png')"/>
                 </div>
             </div>
             <div class="order_box" v-show="active==1">
                 <order></order>
             </div>
             <div class="me_box" v-show="active==2">
-
+               <div class="my_header van-clearfix">
+                   <van-image class="fl" :src="require('@/assets/icon_jjfs_yuantong.png')"
+                   round width="50" height="50"/>
+                   <div class="fl" style="margin-left: 15px">
+                       <p class="nick_name">我是一只小小小鸟</p>
+                       <p>手机号</p>
+                   </div>
+               </div>
+               <div class="menu_box">
+                    <p @click="toMyAddress">
+                        我的地址
+                        <span class="fr"> > </span>
+                    </p>
+                   <p>
+                       帮助中心
+                       <span class="fr"> > </span>
+                   </p>
+               </div>
             </div>
         </div>
         <div class="tool_bar">
-            <van-tabbar v-model="active">
+            <van-tabbar v-model="active" @change="onChange">
                 <van-tabbar-item icon="home-o">寄快递</van-tabbar-item>
                 <van-tabbar-item icon="search">订单</van-tabbar-item>
                 <van-tabbar-item icon="friends-o">我的</van-tabbar-item>
@@ -95,9 +126,12 @@ export default {
   data() {
     return {
       active: 0, // 0 主页   1 订单  2  我的
+      noticeList: [],
       images: [
-        'https://img01.yzcdn.cn/vant/apple-1.jpg',
-        'https://img01.yzcdn.cn/vant/apple-2.jpg'
+        'http://81.68.198.45/uploads/b1.jpg',
+        'http://81.68.198.45/uploads/b2.jpg',
+        'http://81.68.198.45/uploads/b3.jpg',
+        'http://81.68.198.45/uploads/b4.jpg'
       ]
     }
   },
@@ -105,6 +139,7 @@ export default {
     order
   },
   created() {
+      this.getNotice()
     // 获取配置的 公众号信息
     // 获取公众号授权
     // https://open.weixin.qq.com/connect/oauth2/authorize?
@@ -118,6 +153,7 @@ export default {
     if (user) {
       // 说明此时登陆着
       console.dir(user)
+
     } else {
       // 未登录  去请求授权登录
       const getParam = window.location.href
@@ -157,13 +193,16 @@ export default {
             }
           )
           if (res.errno === 0) {
-            window.location = res['data'];
+            // window.location = res['data'];
           }
         })
       }
     }
   },
   methods: {
+    onChange() {
+      console.log(this.active)
+    },
     toCreate($e) {
       // 1 京东  2 京东得物 3德邦 4申通 5 圆通 6 极兔 7 顺丰
       console.log(`点击了我${$e}`)
@@ -177,6 +216,17 @@ export default {
         if (pair[0] == $e) { return pair[1] }
       }
       return (false)
+    },
+    toMyAddress() {
+        this.$router.push({ path: 'MyAddress'})
+    },
+    getNotice() {
+        this.$fetch(`/Index/getNotice`, '').then((res) => {
+            console.dir(res.data)
+            if (res.errno === 0) {
+                this.noticeList = res['data']
+            }
+        })
     }
   },
   watch: {
@@ -188,8 +238,79 @@ export default {
 </script>
 
 <style lang="less" scoped>
+  .content {
+    background-color: white;
+    height: 100vh;
+  }
   .notice-swipe {
     height: 40px;
     line-height: 40px;
+  }
+  .sub_title {
+    color: black;
+    font-size: 18px;
+    margin: 18px;
+    font-weight: 700;
+    display:none;
+  }
+  .grid_box {
+    float:left;
+    width:44%;
+    padding: 2%;
+    margin-top: 18px;
+    margin-bottom: 10px;
+    margin-left: 1%;
+    background-color:white;
+    border: 1px solid #ccc;
+
+    .van-image {
+      width: 50px;
+      height: 50px;
+      margin-right: 10px;
+    }
+    p:nth-child(1) {
+      color: black;
+      font-size: 16px;
+      margin-top: 5px;
+    }
+    p:nth-child(2) {
+      color: gray;
+      font-size: 10px;
+      margin-top: 5px;
+    }
+
+  }
+  .article_box {
+
+    height: 50px;
+    img {
+      width: 100%;
+      height: 100px;
+      background-position: 50px 50px;
+    }
+  }
+
+  .me_box {
+    background-color: #Fbfbfb;
+    height: 100%;
+    .my_header {
+      padding: 30px 20px;
+      background-color: white;
+      .nick_name {
+        margin-top: 5px;
+        font-size: 16px;
+        font-weight: 600;
+        margin-bottom: 5px;
+      }
+    }
+    .menu_box {
+      margin: 10px;
+      border-radius: 20px;
+       p {
+         display: block;
+         padding: 15px;
+         background-color: white;
+       }
+    }
   }
 </style>

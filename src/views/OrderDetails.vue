@@ -32,7 +32,7 @@
         </div>
 
         </van-sticky>
-        <van-overlay :show="showAddress" z-index="100" @click="isShowAddress">
+        <van-overlay :show="showAddress" z-index="100" @click="isShowAddress" v-if="order">
             <div class="address_info">
                 <!--详细的地址信息-->
                 <div class="sender_box van-clearfix" >
@@ -50,9 +50,9 @@
             </div>
         </van-overlay>
         <div class="content  van-clearfix" v-if="order">
-             <div>
+             <div class="card">
                  <span class="sub_title">运单信息</span>
-                 <ul>
+                 <ul class="van-clearfix">
                      <li>物品名称：{{order.goods}}</li>
                      <li>包裹数量：1</li>
                      <li>物品体积：{{order.volume}}m³</li>
@@ -63,7 +63,7 @@
                      <li :style="activityColor">费用状态：{{order.overWeightStatus | weightText}}</li>
                  </ul>
              </div>
-             <div class="price_info" v-if="order">
+             <div class="price_info van-clearfix card" v-if="order">
                  <span class="sub_title">价格信息</span>
                  <ul>
                      <li>快递费用：￥12.5</li>
@@ -74,6 +74,15 @@
                      <li v-if="order.otherFee">其它费用：￥{{order.otherFee}}</li>
                      <li v-if="order.serviceCharge">服务费：￥{{order.serviceCharge}}</li>
                  </ul>
+             </div>
+             <div class="order_bill card" v-if="order && order.bill">
+                 <span class="sub_title">账单明细</span>
+                  <div v-for="(bill,i) in order.bill" :key="i">
+                      <span>{{bill.type ==1 ? '下单费': '超重/耗材/保价/转寄/加长'}}</span>
+                      <span>￥{{bill.total_price}}</span>
+                      <span v-if="bill.pay_status==1" style="color: red">未支付</span>
+                      <span v-else-if="bill.pay_status==2" style="color: dodgerblue">已支付</span>
+                  </div>
              </div>
         </div>
         <div class="footer">
@@ -113,12 +122,13 @@ export default {
   },
   created() {
     this.user = local.getUser()
-    console.dir(this.user)
-    console.log(`登录信息：${this.user.customer.id}`)
-    if (!this.user) {
-      // 需要登录
-      return
-    }
+
+    // if (!this.user) {
+    //   // 需要登录
+    //     console.log('需要登录')
+    //   return
+    // }
+
       if (this.$route.query.id) {
           console.log(`类型${this.$route.query.id}`)
           this.getdetail(this.$route.query.id)
@@ -210,7 +220,6 @@ export default {
     position: relative;
     background-color: white;
     height: 90px;
-    margin-bottom: 10px;
     .left_box {
       margin-left: 65px;
     }
@@ -294,21 +303,42 @@ export default {
   }
 
   .content {
-    background-color: white;
-    padding: 15px;
-    margin-bottom: 10px;
-    .sub_title {
-      display: inline-block;
-      color: black;
-      font-weight: 600;
-      font-size: 16px;
-      margin-bottom: 15px;
+    padding: 10px;
+    .card {
+      background-color: white;
+      margin-bottom: 10px;
+      border-radius: 5px;
+      padding: 10px;
+      .sub_title {
+        display: inline-block;
+        color: black;
+        font-weight: 600;
+        font-size: 16px;
+        margin-bottom: 15px;
+      }
+      li {
+        float: left;
+        width: 50%;
+        height: 30px;
+      }
     }
-    li {
-      float: left;
-      width: 50%;
-      height: 30px;
+    .order_bill {
+      div {
+        span {
+          display: inline-block;
+          width: 45%;
+          height: 40px;
+          line-height: 40px;
+        }
+        span:nth-child(2n) {
+          width: 10%;
+        }
+        span:nth-child(3n) {
+          text-align: right;
+        }
+      }
     }
+
   }
   .footer {
     background-color: white;

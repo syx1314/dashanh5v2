@@ -15,7 +15,7 @@ export default {
   .title {
     color: white;
     background-color: #317ee7;
-    font-size: 18px;
+    font-size: 16px;
     padding: 15px;
   span {
     display: block;

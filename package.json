@@ -17,6 +17,7 @@
     "build:mp": "rimraf dist/mp/common && cross-env NODE_ENV=production webpack --config build/webpack.mp.config.js --progress --hide-modules"
   },
   "dependencies": {
+    "@vant/area-data": "^1.2.2",
     "axios": "^0.25.0",
     "babel-plugin-import": "^1.13.3",
     "flexible": "^0.1.20",

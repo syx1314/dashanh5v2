@@ -7,6 +7,10 @@ import SendPost from '@/views/SendPost'
 // eslint-disable-next-line import/extensions
 import WriteAddress from '@/views/WriteAddress'
 // eslint-disable-next-line import/extensions
+import MyAddress from '@/views/MyAddress'
+// eslint-disable-next-line import/extensions
+import AddressEdit from '@/views/AddressEdit'
+// eslint-disable-next-line import/extensions
 import HomePage from '@/views/HomePage'
 // eslint-disable-next-line import/extensions
 import OrderDetails from '@/views/OrderDetails'
@@ -29,6 +33,16 @@ export default new Router({
       path: '/WriteAddress',
       name: 'WriteAddress',
       component: WriteAddress
+    },
+    {
+      path: '/MyAddress',
+      name: 'MyAddress',
+      component: MyAddress
+    },
+    {
+      path: '/AddressEdit',
+      name: 'AddressEdit',
+      component: AddressEdit
     },
     {
       path: '/HomePage',
