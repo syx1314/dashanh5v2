@@ -89,7 +89,7 @@
 <!--            // 显示物流信息-->
             <span class="sub_title">物流信息</span>
             <van-steps direction="vertical" :active="0" v-if="order">
-                <van-step v-for="(trace, index) in order.traceList">
+                <van-step v-for="(trace, index) in order.traceList" :key="index">
                     <h3>{{trace.opeRemark}}</h3>
                     <p>{{trace.opeTime}}</p>
                 </van-step>
@@ -103,18 +103,19 @@
 
 import local from '../utils/storage'
 import titleView from '../components/CommonTitle'
-import  arrowRight from '../assets/icon_arrow_right.png'
-import  copyIcon from '../assets/icon_cppy.png'
-import {Dialog} from "vant";
+import arrowRight from '../assets/icon_arrow_right.png'
+import copyIcon from '../assets/icon_cppy.png'
+import { Dialog } from 'vant'
+
 export default {
-  name: 'SendPost',
+  name: 'OrderDetails',
   data() {
     return {
-        title: '运单详情',
-        order: null,
-        arrowRight,
-        copyIcon,
-        showAddress: false
+      title: '运单详情',
+      order: null,
+      arrowRight,
+      copyIcon,
+      showAddress: false
     }
   },
   components: {
@@ -129,69 +130,67 @@ export default {
     //   return
     // }
 
-      if (this.$route.query.id) {
-          console.log(`类型${this.$route.query.id}`)
-          this.getdetail(this.$route.query.id)
-      }
+    if (this.$route.query.id) {
+      console.log(`类型${this.$route.query.id}`)
+      this.getdetail(this.$route.query.id)
+    }
   },
   methods: {
-      getdetail($id) {
-          this.$fetch('/Expressorder/queryOrderDetail',{
-              id:$id
-          }).then((res) => {
-              if (res['errno'] === 0) {
-                  this.order = res['data']
-              }else {
-                  Dialog.alert({message:res['errmsg']})
-              }
-          })
-      },
-      copy($copyText) {
-          console.log("点击了复制")
-          navigator.clipboard.writeText($copyText).then(()=>{
-              alert('复制成功')
-          }).catch(()=>{
-              alert('复制失败')
-          })
-      },
-      isShowAddress() {
-          console.log("点击了我"+this.showAddress)
-          this.showAddress=!this.showAddress
-      }
+    getdetail($id) {
+      this.$fetch('/Expressorder/queryOrderDetail', {
+        id: $id
+      }).then((res) => {
+        if (res.errno === 0) {
+          this.order = res.data
+        } else {
+          Dialog.alert({ message: res.errmsg })
+        }
+      })
+    },
+    copy($copyText) {
+      console.log('点击了复制')
+      navigator.clipboard.writeText($copyText).then(() => {
+        alert('复制成功')
+      }).catch(() => {
+        alert('复制失败')
+      })
+    },
+    isShowAddress() {
+      console.log(`点击了我${this.showAddress}`)
+      this.showAddress = !this.showAddress
+    }
   },
   computed: {
     activityColor() {
-        if (this.order.overWeightStatus === 1) {
-            return {
-                color:'#f00'
-            }
-        }else if (this.order.overWeightStatus ===1) {
-            return {
-                color: '#008000'
-            }
-        }else if (this.order.overWeightStatus  === 3) {
-            return {
-                color: '#0000ff'
-            }
-        }else {
-            return {
-                color: '#008000'
-            }
+      if (this.order.overWeightStatus === 1) {
+        return {
+          color: '#f00'
         }
+      } else if (this.order.overWeightStatus === 1) {
+        return {
+          color: '#008000'
+        }
+      } else if (this.order.overWeightStatus === 3) {
+        return {
+          color: '#0000ff'
+        }
+      }
+      return {
+        color: '#008000'
+      }
     }
   },
-  filters:{
-      weightText($val) {
-          if ($val === 1) {
-              return '超重/耗材/保价/转寄/加长未处理'
-          }else if ($val===1) {
-              return '超重/耗材/保价/转寄/加长已处理'
-          }else if ($val === 3) {
-              return '超轻'
-          }else {
-              return '正常'
-          }
+  filters: {
+    weightText($val) {
+      if ($val === 1) {
+        return '超重/耗材/保价/转寄/加长未处理'
+      } else if ($val === 1) {
+        return '超重/耗材/保价/转寄/加长已处理'
+      } else if ($val === 3) {
+        return '超轻'
       }
+      return '正常'
+    }
   }
 }
 </script>

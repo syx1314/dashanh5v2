@@ -11,6 +11,9 @@
                     <div v-else>新建寄件人</div>
                     <div>{{ goAddress ? goAddress : '请输入寄件地址' }}</div>
                 </div>
+                <van-image :src="require('@/assets/icon_select_address.png')"
+                          width="30" height="30" style="margin-top: 10px"
+                          @click="toSelectAddress('go')"/>
             </div>
             <div class='receive'>
                 <div class="icon_box">
@@ -21,6 +24,9 @@
                     <div v-else>新建收件人</div>
                     <div>{{ toAddress ? toAddress : '请输入收件地址' }}</div>
                 </div>
+              <van-image :src="require('@/assets/icon_select_address.png')"
+                         width="30" height="30" style="margin-top: 10px"
+                         @click="toSelectAddress('to')"/>
             </div>
         </div>
         <div class='card goods_info_box'>
@@ -181,40 +187,10 @@ export default {
     isString($obj) {
       return Object.prototype.toString.call($obj) === '[object String]'
     },
-    checkMatchChannel() {
-      const requestData = {
-        senderProvince: this.sendAddress.province,
-        senderCity: this.sendAddress.city,
-        senderCounty: this.sendAddress.county,
-        senderTown: this.sendAddress.town,
-        receiveProvince: this.receiveAddres.province,
-        receiveCity: this.receiveAddres.city,
-        receiveTown: this.receiveAddres.town,
-        receiveCounty: this.receiveAddres.county,
-        packageCount: 1, // 包裹数
-        weight: this.wight, // 重量 kg
-        tempReceiveAddress: this.toAddress, //
-        tempSendAddress: this.sendAddress, //
-        customerFreightType: '微信', //
-        linkName: 'yywl-袁宇进' //
-      }
-      this.$post('/jdserver2/checkMatchChannel', requestData)
-        .then((res) => {
-          console.log(res)
-          const re = res.result
-          if (re && res.code === '1') {
-            const priceObj = re.price
-            this.maxPrice = re.freight
-            this.priceObj = `首重${priceObj.priceOne}  2KG:${priceObj.priceTwo}  3KG:${priceObj.priceThree}\n4KG:${priceObj.priceFour
-            }  5KG:${priceObj.priceFive}  续重:${priceObj.priceMore}`
-            this.show = true
-          } else {
-            this.show = false
-            alert(re)
-          }
-        })
+    toSelectAddress($e) {
+      console.log($e)
+      this.$router.push({ name: 'MyAddress', query: { flag: 'go' } })
     },
-
     // 创建订单
     createMyOrder() {
       if (!this.shopName || !this.weight) {
