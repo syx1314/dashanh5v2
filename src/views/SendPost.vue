@@ -36,7 +36,7 @@
                 <van-radio name="衣服">衣服</van-radio>
                 <van-radio name="鞋子">鞋子</van-radio>
                 <van-radio name="其它">其它</van-radio>
-                <van-field v-model="shopName" placeholder="请输入物品信息" class="shopName"/>
+                <input v-model="shopName" placeholder="请输入物品信息" class="shopName"/>
             </van-radio-group>
 
             <div class="weight_box">
@@ -50,7 +50,7 @@
                 <span>自定义货物价值</span>
                 <van-field v-model="baojiaPrice" placeholder="输入保价金额" class="baojiaPrice"/>
             </div>
-            <span class="baojiaRule"> {{priceInfo.remark}}</span>
+            <span class="baojiaRule" v-html="priceInfo.remark"/>
         </div>
         <div class='card goods_info_box'>
             <div class="sub_title">运费详情</div>
@@ -82,6 +82,7 @@
 
 import local from '../utils/storage'
 import titleView from '../components/CommonTitle'
+import {Dialog} from "vant";
 
 export default {
   name: 'SendPost',
@@ -189,7 +190,7 @@ export default {
     },
     toSelectAddress($e) {
       console.log($e)
-      this.$router.push({ name: 'MyAddress', query: { flag: 'go' } })
+      this.$router.push({ name: 'MyAddress', query: { flag: $e } })
     },
     // 创建订单
     createMyOrder() {
@@ -236,8 +237,15 @@ export default {
       this.$post('/Expressorder/create_order', JSON.stringify(order)).then((res) => {
         this.show = true
         console.dir(res)
-        // 创建订单成功 生成支付 去发起支付
-        this.topay(res.data, 1)
+          if (res['errno'] === 0) {
+              // 创建订单成功 生成支付 去发起支付
+              this.topay(res.data, 1)
+          }else {
+              Dialog.alert({
+                  message:res['errmsg']
+              })
+          }
+
       })
     },
     // eslint-disable-next-line camelcase
@@ -420,7 +428,7 @@ export default {
       margin-bottom: 10px;
 
       .van-radio {
-        width: 30%;
+        width: 29%;
         margin-top: 10px;
       }
     }
@@ -428,6 +436,8 @@ export default {
     .shopName {
       display: block;
       width: 60%;
+      height: 30px;
+      padding-left: 10px;
       margin-top: 15px;
       border: 1px solid #cccccc;
       border-radius: 3px;

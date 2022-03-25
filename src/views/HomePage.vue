@@ -1,7 +1,6 @@
 <template>
   <!--主页-->
   <div>
-
     <div class="content">
       <div class="main_box" v-show="active==0">
         <div class="banner">
@@ -26,60 +25,17 @@
         <div class="express_item">
           <p class="sub_title">快递优选</p>
           <van-grid square :column-num="2">
-            <div class="grid_box" @click="toCreate(1)">
-              <van-image :src="require('@/assets/icon_jjfs_jingdong.png')" class="fl"/>
+            <div class="grid_box" @click="toCreate(express)" v-for="(express,index) in expressList" :key="index">
+              <van-image :src="express.icon" class="fl"/>
               <div class="fl right_content">
-                <p>京东快递</p>
-                <p>取件较快</p>
+                <p>{{express.name}}</p>
+                <p>{{express.desc}}</p>
               </div>
             </div>
-            <div class="grid_box" @click="toCreate(2)">
-              <van-image :src="require('@/assets/icon_jjfs_debang.png')" class="fl"/>
-              <div class="fl right_content">
-                <p>德邦快递</p>
-                <p>取件快服务好</p>
-              </div>
-            </div>
-            <div class="grid_box" @click="toCreate(5)">
-              <van-image :src="require('@/assets/icon_jjfs_shentong.png')" class="fl"/>
-              <div class="fl right_content">
-                <p>申通快递</p>
-                <p>取件慢,接单慢</p>
-              </div>
-            </div>
-            <div class="grid_box" @click="toCreate(6)">
-              <van-image :src="require('@/assets/icon_jjfs_yuantong.png')" class="fl"/>
-              <div class="fl right_content">
-                <p>圆通快递</p>
-                <p>取件揽收适中</p>
-              </div>
-            </div>
-            <div class="grid_box" @click="toCreate(7)">
-              <van-image :src="require('@/assets/icon_jjfs_dbhang.png')" class="fl"/>
-              <div class="fl right_content">
-                <p>德邦航空</p>
-                <p>取件快，运输快</p>
-              </div>
-            </div>
-            <div class="grid_box" @click="toCreate(8)">
-              <van-image :src="require('@/assets/icon_jjfs_shunfeng.png')" class="fl"/>
-              <div class="fl right_content">
-                <p>顺丰快递</p>
-                <p>取件快，运输快</p>
-              </div>
-            </div>
-            <div class="grid_box" @click="toCreate(7)">
-              <van-image :src="require('@/assets/icon_jjfs_jitu.png')" class="fl"/>
-              <div class="fl right_content">
-                <p>极兔快递</p>
-                <p>取件较慢,有缺陷</p>
-              </div>
-            </div>
-
           </van-grid>
         </div>
         <div class="article_box">
-          <van-image :src="require('@/assets/icon_home_new_customer.png')"/>
+          <img :src="require('@/assets/icon_home_new_customer.png')"/>
         </div>
       </div>
       <div class="order_box" v-show="active==1">
@@ -106,7 +62,7 @@
         </div>
       </div>
     </div>
-    <div class="tool_bar">
+    <div class="tool_bar van-clearfix">
       <van-tabbar v-model="active" @change="onChange">
         <van-tabbar-item icon="home-o">寄快递</van-tabbar-item>
         <van-tabbar-item icon="search">订单</van-tabbar-item>
@@ -128,19 +84,15 @@ export default {
     return {
       active: 0, // 0 主页   1 订单  2  我的
       noticeList: [],
-      images: [
-        'http://81.68.198.45/uploads/b1.jpg',
-        'http://81.68.198.45/uploads/b2.jpg',
-        'http://81.68.198.45/uploads/b3.jpg',
-        'http://81.68.198.45/uploads/b4.jpg',
-      ],
+      images: [],
+      expressList: []
     }
   },
   components: {
     order,
   },
   created() {
-    this.getNotice()
+    this.getIndex()
     // 获取配置的 公众号信息
     // 获取公众号授权
     // https://open.weixin.qq.com/connect/oauth2/authorize?
@@ -195,7 +147,7 @@ export default {
               },
             )
             if (res.errno === 0) {
-              // window.location = res['data'];
+              window.location = res['data'];
             }
           })
       }
@@ -208,7 +160,24 @@ export default {
     toCreate($e) {
       // 1 京东  2 京东得物 3德邦 4申通 5 圆通 6 极兔 7 顺丰
       console.log(`点击了我${$e}`)
-      this.$router.push({ path: 'sendPost', query: { type: $e } })
+      if (!$e.isEnable) {
+          Dialog.alert({
+              message: '暂时不支持线上下单,请联系人工'
+          })
+          return
+      }
+      this.$router.push({ path: 'sendPost', query: { type: $e.id } })
+    },
+    getIndex() {
+        this.$fetch('/Index/getIndex', '')
+            .then((res) => {
+                console.dir(res.data)
+                if (res.errno === 0) {
+                    this.noticeList = res.data.noticeList
+                    this.images = res.data.bannerList
+                    this.expressList = res.data.expressList
+                }
+            })
     },
     getQueryVariable($e) {
       const query = window.location.href.split('?')[1]
@@ -247,8 +216,8 @@ export default {
 .content {
   background-color: white;
   height: 100vh;
+  margin-bottom: 50px;
 }
-
 .notice-swipe {
   height: 40px;
   line-height: 40px;
@@ -261,12 +230,13 @@ export default {
   font-weight: 700;
   display: none;
 }
-
+.tips_box {
+  margin-bottom: 15px;
+}
 .grid_box {
   float: left;
   width: 44%;
   padding: 2%;
-  margin-top: 18px;
   margin-bottom: 10px;
   margin-left: 1%;
   background-color: white;
@@ -295,12 +265,12 @@ export default {
 .article_box {
 
   height: 50px;
-
-  img {
-    width: 100%;
-    height: 100px;
-    background-position: 50px 50px;
-  }
+     img {
+       width: 100%;
+       height: 88px;
+       background-position: 0 92px;
+       background-size: cover;
+     }
 }
 
 .me_box {

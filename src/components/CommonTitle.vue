@@ -1,26 +1,26 @@
 <template>
-  <div class='title'>
-    <span>{{title}}</span>
-  </div>
+    <div class='title'>
+        <van-nav-bar
+                :title="title"
+                left-text="返回"
+                left-arrow
+                @click-left="onClickLeft"
+        />
+    </div>
 </template>
 
 <script>
-export default {
-  name: 'CommonTitle',
-  props: ['title']
-}
+    export default {
+        name: 'CommonTitle',
+        props: ['title'],
+        methods: {
+            onClickLeft() {
+                this.$router.back()
+            }
+        }
+    }
 </script>
 
 <style lang="less" scoped>
-  .title {
-    color: white;
-    background-color: #317ee7;
-    font-size: 16px;
-    padding: 15px;
-  span {
-    display: block;
-    width: 100px;
-    margin: auto;
-  }
-  }
+
 </style>

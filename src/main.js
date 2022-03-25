@@ -13,7 +13,7 @@ import { post, fetch, patch, put } from './axios/http'
 import { Tabbar, TabbarItem, PullRefresh, List, Stepper, Rate, RadioGroup
   // eslint-disable-next-line max-len
   , Radio, Field, Grid, GridItem, Swipe, SwipeItem, Lazyload, NoticeBar, Image as VanImage, Dialog, Loading
-  , Step, Steps, Sticky, Popup, Overlay,AddressList,AddressEdit  } from 'vant'
+  , Step, Steps, Sticky, Popup, Overlay, AddressList, AddressEdit, NavBar } from 'vant'
 
 Vue.use(Rate)
 Vue.use(Tabbar)
@@ -40,6 +40,7 @@ Vue.use(Popup)
 Vue.use(Overlay)
 Vue.use(AddressList)
 Vue.use(AddressEdit)
+Vue.use(NavBar)
 Vue.config.productionTip = false
 // 定义全局变量
 Vue.prototype.$post = post

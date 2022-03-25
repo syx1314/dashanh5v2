@@ -31,25 +31,44 @@ export default {
       ads: '',
       list: [],
       chosenAddressId: '',
+      userId:''
     }
   },
   components: {
     titleView,
   },
   created() {
-    const user = local.getUser()
-    if (user) {
-      // 说明此时登陆着
-      console.dir(user)
+      const user = local.getUser()
+      if (user) {
+          this.userId = user.customer.id
+      }
+    this.getAddress(this.userId)
+    if (this.$route.query.flag) {
+        this.flag = this.$route.query.flag
     }
-    this.getAddress(9)
   },
   methods: {
     onAdd() {
       this.$router.push({ name: 'AddressEdit' })
     },
     clickItem($e) {
-      console.log($e)
+      console.log('选择了地址'+$e)
+        let saveData= {
+            person:$e.name,
+            phonenum:$e.tel,
+            province:$e.province,
+            city:$e.city,
+            county:$e.county,
+            town:$e.town,
+            detail:$e.addressDetail,
+        }
+        if (this.flag === 'go') {
+            local.set('sendAddress', saveData)
+            this.$router.back()
+        } else if (this.flag === 'to'){
+            local.set('receiveAddress', saveData)
+            this.$router.back()
+        }
     },
     getAddress($userId) {
       this.$fetch(`/Customer/getAddress?userId=${$userId}`, '')

@@ -12,7 +12,7 @@
                 <div class="order_item van-clearfix" v-for="(order,index) in list" :key="index"
                      :title="index" @click="toDetail(order.id)">
                     <div class="hd">
-                        <span>圆通快递:{{ order.trackingNum }}1231313131</span>
+                        <span>圆通快递:{{ order.trackingNum }}</span>
                         <span class="fr">复制单号</span>
                     </div>
                     <div class="bd van-clearfix">
@@ -34,8 +34,8 @@
                             <span>{{ order.create_time }}</span>
                             <span class="price_box fr"><span class="price">￥{{order.totalPrice}}</span></span>
                         </div>
-                        <div class="van-clearfix">
-                            <span class="payOutWeight ">补差价</span>
+                        <div class="van-clearfix"  v-if="order.overWeightStatus == 1" @click="payOtherFee">
+                            <span class="payOutWeight" >补差价</span>
                         </div>
                     </div>
                 </div>
@@ -99,9 +99,12 @@ import CommonTitle  from "./CommonTitle";
 </script>
 
 <style scoped lang="less">
+    .bb {
+      background: #f7f8fa;
+    }
     .order_item {
         background-color: white;
-        margin: 10px 10px 0;
+        margin: 10px;
         padding: 15px;
         border-radius: 10px;
     }
@@ -147,11 +150,12 @@ import CommonTitle  from "./CommonTitle";
       div:nth-child(1) {
         height: 35px;
         line-height: 35px;
-        border-bottom: 1px solid #cccccc;
+
       }
       div:last-child {
         position: relative;
         height: 35px;
+        border-top: 1px solid #cccccc;
       }
       .payOutWeight {
         position: absolute;

@@ -7,10 +7,10 @@
         </div>
         <div class="card address_box">
             <div>寄件人信息</div>
-            <div placeholder="姓名">{{ uname }}</div>
-            <div placeholder="电话">{{ phone }}</div>
-            <div placeholder="省市区">{{ province }}</div>
-            <div placeholder="详细地址">{{ address_info }}</div>
+            <input placeholder="姓名">{{ uname }}</input>
+            <input placeholder="电话">{{ phone }}</input>
+            <input placeholder="省市区">{{ province }}</input>
+            <input placeholder="详细地址">{{ address_info }}</input>
         </div>
         <div class="bottom_box">
             <span class="confirm_btn" @click="confirm">确定</span>
@@ -21,6 +21,7 @@
 <script>
     import local from '../utils/storage'
     import titleView from '../components/CommonTitle'
+    import {Dialog} from "vant";
 
     export default {
         name: 'WriteAddress',
@@ -32,25 +33,18 @@
                 province: '',
                 address_info: '',
                 flag: '',
-                ads: ''
+                ads: []
             }
         },
         components: {
             titleView
         },
         created() {
-            this.flag = this.$route.query.flag
-            console.log(this.flag)
-            if (this.flag === 'go') {
-                this.ads = local.get('sendAddress')
-            } else {
-                this.ads = local.get('receiveAddress')
-            }
             this.setData()
         },
         methods: {
             setData() {
-                if (this.ads) {
+                if (this.ads.length>0) {
                     this.uname = this.ads['person']
                     this.phone = this.ads['phonenum']
                     this.province = this.ads['province'] + '/' + this.ads['city'] + '/' + this.ads['county'] + '/' + this.ads['town']
@@ -66,27 +60,24 @@
                     })
             },
             confirm() {
+                if (this.ads.length <=0) {
+                    Dialog.alert({
+                        message:'地址信息不能为空'
+                    })
+                    return
+                }
                 if (this.flag === 'go') {
                     local.set('sendAddress', this.ads)
                 } else {
                     local.set('receiveAddress', this.ads)
                 }
-                this.$router.push({name: 'SendPost'})
+                this.$router.back()
             }
         }
     }
 </script>
 
 <style lang="less" scoped>
-  .title {
-    height: 40px;
-    line-height: 40px;
-    color: white;
-    background-color: #317ee7;
-    margin-bottom: 10px;
-    text-align: center;
-  }
-
   .card {
     background-color: white;
     border-radius: 8px;
@@ -122,18 +113,17 @@
   }
 
   .address_box {
-    div {
+    input {
+      margin-top: 5px;
+      padding-left: 5px;
+      border: 0px;
+      outline: none;
       height: 30px;
       line-height: 30px;
     }
   }
 
-  input {
-    border: 0;
-    outline: #efeff4;
-    background-color: white;
-    font-size: 15px;
-  }
+
 
   .bottom_box {
     width: 100%;

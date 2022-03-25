@@ -31,14 +31,14 @@ export default {
   data() {
     return {
       address_info: {
-        name: 'adada',
+        name: '',
         tel: '',
-        province: 'aaaa',
-        city: '22',
-        county: '22221',
-        town: '33',
+        province: '',
+        city: '',
+        county: '',
+        town: '',
         addressDetail: '',
-        areaCode: '810309',
+        areaCode: '',
         isDefault: false,
       },
       address: '',
@@ -55,7 +55,7 @@ export default {
   created() {
     const user = local.getUser()
     if (user) {
-      this.userId = user.customer_id
+      this.userId = user.customer.id
     }
     console.log(this.$route.params.address)
     if (this.$route.params.address) {
@@ -63,21 +63,30 @@ export default {
       this.id = this.address_info.id
       if (this.address_info.county) {
         // eslint-disable-next-line no-unused-vars,no-restricted-syntax,guard-for-in
-        for (const countyListKey in areaList.county_list) {
-          if (areaList.county_list[countyListKey] === this.address_info.county) {
-            this.address_info.areaCode = countyListKey
-            break
-          }
-        }
+        this.findAreaCode(this.address_info.county)
       }
     }
   },
   methods: {
+    findAreaCode($county) {
+        for (const countyListKey in areaList.county_list) {
+            if (areaList.county_list[countyListKey] === $county) {
+                this.address_info.areaCode = countyListKey
+                break
+            }
+        }
+    },
     onAdd() {
       console.log('点击了我')
     },
-    onDelete() {
-
+    onDelete($e) {
+        this.$fetch(`/Customer/delAddress?userId=${this.userId}&id=${$e.id}`,).then((res) => {
+            Dialog.alert({
+                message: res.errmsg
+            }).then(() =>{
+                this.$router.back()
+            })
+        })
     },
     setData() {
       if (this.ads) {
@@ -89,6 +98,7 @@ export default {
         this.address_info.town = this.ads.town
         this.address_info.addressDetail = this.ads.detail
         console.dir(this.address_info)
+        this.findAreaCode(this.address_info.county)
       }
     },
     parseAddress() {
@@ -114,6 +124,8 @@ export default {
       this.$post(`/Customer/saveAddress?userId=${this.userId}`, JSON.stringify(postData)).then((res) => {
         Dialog.alert({
           message: res.errmsg
+        }).then(() =>{
+            this.$router.back()
         })
       })
     }
@@ -122,14 +134,6 @@ export default {
 </script>
 
 <style lang="less" scoped>
-  .title {
-    height: 40px;
-    line-height: 40px;
-    color: white;
-    background-color: #317ee7;
-    margin-bottom: 10px;
-    text-align: center;
-  }
 
   .card {
     background-color: white;

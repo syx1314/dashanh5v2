@@ -4,9 +4,9 @@
         <title-view :title="title"/>
         <div class="header" v-if="order">
             <span class="express_no_box">
-                运单号:{{order.rackingNum}}
+                运单号:{{order.trackingNum}}
                 <div class="copy_icon" >
-                    <img :src="copyIcon" @click="copy(order.rackingNum)"/>
+                    <img :src="copyIcon" @click="copy(order.trackingNum)"/>
                 </div>
             </span>
             <div class="address_box van-clearfix">
@@ -57,8 +57,8 @@
                      <li>包裹数量：1</li>
                      <li>物品体积：{{order.volume}}m³</li>
                      <li>体积换算：{{order.volumeWeight}}kg</li>
-                     <li>下单重量：{{order.weightActual}}kg</li>
-                     <li>实际重量：{{order.volumeWeight}}kg</li>
+                     <li>下单重量：{{order.weight}}kg</li>
+                     <li>实际重量：{{order.weightActual}}kg</li>
                      <li>计费重量：{{order.weightBill}}kg</li>
                      <li :style="activityColor">费用状态：{{order.overWeightStatus | weightText}}</li>
                  </ul>
@@ -80,7 +80,10 @@
                   <div v-for="(bill,i) in order.bill" :key="i">
                       <span>{{bill.type ==1 ? '下单费': '超重/耗材/保价/转寄/加长'}}</span>
                       <span>￥{{bill.total_price}}</span>
-                      <span v-if="bill.pay_status==1" style="color: red">未支付</span>
+                      <span v-if="bill.pay_status==1" style="color: red">
+                          未支付
+                          <strong style="background-color: red;color: white" @click="topay(bill.id,1)">支付</strong>
+                      </span>
                       <span v-else-if="bill.pay_status==2" style="color: dodgerblue">已支付</span>
                   </div>
              </div>
@@ -158,7 +161,41 @@ export default {
     isShowAddress() {
       console.log(`点击了我${this.showAddress}`)
       this.showAddress = !this.showAddress
-    }
+    },
+    topay($bill_id, $paytype) {
+          this.$fetch('/Expressorder/topay', {
+              order_id: $bill_id,
+              paytype: $paytype
+          }).then((res) => {
+              this.show = true
+              if (res.errno === 1) {
+                  Dialog({
+                      message:res.errmsg
+                  })
+                  return
+              }
+              console.dir(res)
+              // 创建订单成功 生成支付 去发起支付
+              const payData = {
+                  appId: res.data.appId,
+                  timeStamp: `${res.data.timeStamp }`,
+                  nonceStr: res.data.nonceStr,
+                  package: res.data.package,
+                  signType: res.data.signType,
+                  paySign: res.data.sign
+              }
+              this.onBridgeReady(payData)
+          })
+      },
+      onBridgeReady($payStr) {
+          WeixinJSBridge.invoke('getBrandWCPayRequest', $payStr,
+              (res) => {
+                  if (res.err_msg === 'get_brand_wcpay_request:ok') {
+                      // 使用以上方式判断前端返回,微信团队郑重提示：
+                      // res.err_msg将在用户支付成功后返回ok，但并不保证它绝对可靠。
+                  }
+              })
+    },
   },
   computed: {
     activityColor() {
