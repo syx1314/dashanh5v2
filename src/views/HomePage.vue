@@ -43,7 +43,7 @@
       </div>
       <div class="me_box" v-show="active==2">
         <div class="my_header van-clearfix">
-          <van-image class="fl" :src="require('@/assets/icon_jjfs_yuantong.png')"
+          <van-image class="fl" :src="require('@/assets/icon_home_new_customer.png')"
                      round width="50" height="50"/>
           <div class="fl" style="margin-left: 15px">
             <p class="nick_name">我是一只小小小鸟</p>
@@ -92,7 +92,7 @@ export default {
     order,
   },
   created() {
-    this.getIndex()
+      this.getIndex()
     // 获取配置的 公众号信息
     // 获取公众号授权
     // https://open.weixin.qq.com/connect/oauth2/authorize?
@@ -106,6 +106,7 @@ export default {
     if (user) {
       // 说明此时登陆着
       console.dir(user)
+        this.getIndex()
     } else {
       // 未登录  去请求授权登录
       const getParam = window.location.href
@@ -123,6 +124,7 @@ export default {
             if (res.errno === 0) {
               // 登录成功 保存用户信息
               local.saveUser(res.data)
+                this.getIndex()
             } else {
               Dialog.alert(
                 {
@@ -147,7 +149,7 @@ export default {
               },
             )
             if (res.errno === 0) {
-              window.location = res['data'];
+              // window.location = res['data'];
             }
           })
       }
