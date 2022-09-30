@@ -7,10 +7,22 @@
         </div>
         <div class="card address_box">
             <div>寄件人信息</div>
-            <input placeholder="姓名">{{ uname }}</input>
-            <input placeholder="电话">{{ phone }}</input>
-            <input placeholder="省市区">{{ province }}</input>
-            <input placeholder="详细地址">{{ address_info }}</input>
+            <p>
+              <span>姓名</span>
+              <input placeholder="请输入姓名" v-model="uname"/>
+            </p>
+          <p>
+            <span>电话</span>
+            <input placeholder="请输入电话"  v-model="phone"/>
+          </p>
+          <p>
+            <span>省市区</span>
+            <input placeholder="省市区" disabled :value=" province ? province : '' "/>
+          </p>
+          <p>
+            <span>详细地址</span>
+            <input placeholder="请输入详细地址"  v-model="address_info "/>
+          </p>
         </div>
         <div class="bottom_box">
             <span class="confirm_btn" @click="confirm">确定</span>
@@ -19,62 +31,90 @@
 </template>
 
 <script>
-    import local from '../utils/storage'
-    import titleView from '../components/CommonTitle'
-    import {Dialog} from "vant";
+import local from '../utils/storage'
+// eslint-disable-next-line import/extensions
+import titleView from '../components/CommonTitle'
+import { Dialog } from 'vant'
 
-    export default {
-        name: 'WriteAddress',
-        data() {
-            return {
-                address: '',
-                uname: '',
-                phone: '',
-                province: '',
-                address_info: '',
-                flag: '',
-                ads: []
-            }
-        },
-        components: {
-            titleView
-        },
-        created() {
-            this.setData()
-        },
-        methods: {
-            setData() {
-                if (this.ads.length>0) {
-                    this.uname = this.ads['person']
-                    this.phone = this.ads['phonenum']
-                    this.province = this.ads['province'] + '/' + this.ads['city'] + '/' + this.ads['county'] + '/' + this.ads['town']
-                    this.address_info = this.ads['detail']
-                }
-            },
-            parseAddress() {
-                this.$fetch('/Expressorder/nlpAddress?address=' + decodeURI(this.address), '')
-                    .then((res) => {
-                        console.log(res)
-                        this.ads = res['data']
-                        this.setData()
-                    })
-            },
-            confirm() {
-                if (this.ads.length <=0) {
-                    Dialog.alert({
-                        message:'地址信息不能为空'
-                    })
-                    return
-                }
-                if (this.flag === 'go') {
-                    local.set('sendAddress', this.ads)
-                } else {
-                    local.set('receiveAddress', this.ads)
-                }
-                this.$router.back()
-            }
-        }
+
+export default {
+  name: 'WriteAddress',
+  data() {
+    return {
+      address: '',
+      uname: '',
+      phone: '',
+      province: '',
+      address_info: '',
+      flag: 'go',
+      ads: []
     }
+  },
+  components: {
+    titleView
+  },
+  created() {
+    this.setAddressData()
+    if (this.$route.query.flag) {
+      this.flag = this.$route.query.flag
+    }
+  },
+  methods: {
+    setAddressData() {
+      if (this.ads) {
+        this.uname = this.ads.person
+        this.phone = this.ads.phonenum
+        if (this.ads.city) {
+          this.province = `${this.ads.province}/${this.ads.city}/${this.ads.county}/${this.ads.town}`
+        }
+        this.address_info = this.ads.detail
+      }
+    },
+    parseAddress() {
+      this.$fetch(`/Expressorder/nlpAddress?address=${decodeURI(this.address)}`, '')
+        .then((res) => {
+          console.log(res)
+          this.ads = res.data
+          this.setAddressData()
+        })
+    },
+    confirm() {
+      if (!this.uname) {
+        Dialog.alert({
+          message: '请填写名字'
+        })
+        return
+      }
+      if (!this.phone) {
+        Dialog.alert({
+          message: '请填写手机号'
+        })
+        return
+      }
+      if (!this.address_info) {
+        Dialog.alert({
+          message: '请填写详细地址'
+        })
+        return
+      }
+      if (this.ads.length <= 0) {
+        Dialog.alert({
+          message: '地址信息不能为空'
+        })
+        return
+      }
+      this.ads.person = this.uname
+      this.ads.phonenum = this.phone
+      this.ads.detail = this.address_info
+      if (this.flag === 'go') {
+        local.set('sendAddress', this.ads)
+      } else {
+        local.set('receiveAddress', this.ads)
+      }
+      this.$router.back()
+    }
+  }
+}
 </script>
 
 <style lang="less" scoped>
@@ -113,16 +153,21 @@
   }
 
   .address_box {
+    span {
+      display: inline-block;
+      width: 20%;
+    }
     input {
+      width: 75%;
       margin-top: 5px;
       padding-left: 5px;
-      border: 0px;
+      border: 0;
       outline: none;
       height: 30px;
+      background-color: white;
       line-height: 30px;
     }
   }
-
 
 
   .bottom_box {

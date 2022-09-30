@@ -30,81 +30,84 @@
             </div>
 
         </div>
-
         </van-sticky>
+      <div class="content_box">
         <van-overlay :show="showAddress" z-index="100" @click="isShowAddress" v-if="order">
-            <div class="address_info">
-                <!--详细的地址信息-->
-                <div class="sender_box van-clearfix" >
-                    <img src="https://cdn.kuaidi100.com/images/m/dispatch/ico_send.png"/>
-                    <p class="hd">{{ order.sender_name }}{{ order.sender_phone }}  </p>
-                    <p class="bd">{{ order.senderCity }}{{ order.sender_address }}  </p>
-                </div>
-                <div class="receive_box van-clearfix">
-                    <img src="https://cdn.kuaidi100.com/images/m/dispatch/ico_shou.png"/>
-                    <p class="hd">{{ order.receiveName }}{{ order.receivePhone }}  </p>
-                    <p class="bd">{{ order.receiveCity }}{{ order.receiveAddress }}  </p>
-                </div>
-                <div>物品名称：{{order.goods}}</div>
-                <div>下单时间：{{order.create_time}}</div>
+          <div class="address_info">
+            <!--详细的地址信息-->
+            <div class="sender_box van-clearfix" >
+              <img src="https://cdn.kuaidi100.com/images/m/dispatch/ico_send.png"/>
+              <p class="hd">{{ order.sender_name }}{{ order.sender_phone }}  </p>
+              <p class="bd">{{ order.senderCity }}{{ order.sender_address }}  </p>
             </div>
+            <div class="receive_box van-clearfix">
+              <img src="https://cdn.kuaidi100.com/images/m/dispatch/ico_shou.png"/>
+              <p class="hd">{{ order.receiveName }}{{ order.receivePhone }}  </p>
+              <p class="bd">{{ order.receiveCity }}{{ order.receiveAddress }}  </p>
+            </div>
+            <div>物品名称：{{order.goods}}</div>
+            <div>下单时间：{{order.create_time}}</div>
+          </div>
         </van-overlay>
         <div class="content  van-clearfix" v-if="order">
-             <div class="card">
-                 <span class="sub_title">运单信息</span>
-                 <ul class="van-clearfix">
-                     <li>物品名称：{{order.goods}}</li>
-                     <li>包裹数量：1</li>
-                     <li>物品体积：{{order.volume}}m³</li>
-                     <li>体积换算：{{order.volumeWeight}}kg</li>
-                     <li>下单重量：{{order.weight}}kg</li>
-                     <li>实际重量：{{order.weightActual}}kg</li>
-                     <li>计费重量：{{order.weightBill}}kg</li>
-                     <li :style="activityColor">费用状态：{{order.overWeightStatus | weightText}}</li>
-                 </ul>
-             </div>
-             <div class="price_info van-clearfix card" v-if="order">
-                 <span class="sub_title">价格信息</span>
-                 <ul>
-                     <li>快递费用：￥12.5</li>
-                     <li>已经支付：￥{{order.totalPrice}}</li>
-                     <li>保价费用：￥{{order.insuranceFee}}</li>
-                     <li>耗材费用：￥{{order.consumeFee}}</li>
-                     <li v-if="order.changeFee">转寄费用：￥{{order.changeFee}}</li>
-                     <li v-if="order.otherFee">其它费用：￥{{order.otherFee}}</li>
-                     <li v-if="order.serviceCharge">服务费：￥{{order.serviceCharge}}</li>
-                 </ul>
-             </div>
-             <div class="order_bill card" v-if="order && order.bill">
-                 <span class="sub_title">账单明细</span>
-                  <div v-for="(bill,i) in order.bill" :key="i">
-                      <span>{{bill.type ==1 ? '下单费': '超重/耗材/保价/转寄/加长'}}</span>
-                      <span>￥{{bill.total_price}}</span>
-                      <span v-if="bill.pay_status==1" style="color: red">
+          <div class="card">
+            <span class="sub_title">运单信息</span>
+            <ul class="van-clearfix">
+              <li>物品名称：{{order.goods}}</li>
+              <li>包裹数量：1</li>
+              <li>物品体积：{{order.volume}}m³</li>
+              <li>体积换算：{{order.volumeWeight}}kg</li>
+              <li>下单重量：{{order.weight}}kg</li>
+              <li>实际重量：{{order.weightActual}}kg</li>
+              <li>计费重量：{{order.weightBill}}kg</li>
+              <li :style="activityColor">费用状态：{{order.overWeightStatus | weightText}}</li>
+            </ul>
+          </div>
+          <div class="price_info van-clearfix card" v-if="order">
+            <span class="sub_title">价格信息</span>
+            <ul>
+              <li>快递费用：￥{{order.billTotalPrice}}</li>
+              <li>已经支付：￥{{order.payTotalPrice}}</li>
+              <li>保价费用：￥{{order.insuranceFee}}</li>
+              <li>耗材费用：￥{{order.consumeFee}}</li>
+              <li v-if="order.changeFee">转寄费用：￥{{order.changeFee}}</li>
+              <li v-if="order.otherFee">其它费用：￥{{order.otherFee}}</li>
+              <li v-if="order.serviceCharge">服务费：￥{{order.serviceCharge}}</li>
+            </ul>
+          </div>
+          <div class="order_bill card" v-if="order && order.bill">
+            <span class="sub_title">账单明细</span>
+            <div v-for="(bill,i) in order.bill" :key="i">
+              <span>{{bill.type ==1 ? '下单费': '超重/耗材/保价/转寄/加长'}}</span>
+              <span>￥{{bill.total_price}}</span>
+              <span v-if="bill.pay_status==1" style="color: red">
                           未支付
-                          <strong style="background-color: red;color: white" @click="topay(bill.id,1)">支付</strong>
+                          <strong style="background-color: red;color: white"
+                                  @click="topay(bill.id,1)">支付</strong>
                       </span>
-                      <span v-else-if="bill.pay_status==2" style="color: dodgerblue">已支付</span>
-                  </div>
-             </div>
+              <span v-else-if="bill.pay_status==2" style="color: dodgerblue">已支付</span>
+            </div>
+          </div>
         </div>
         <div class="footer">
-<!--            // 显示物流信息-->
-            <span class="sub_title">物流信息</span>
-            <van-steps direction="vertical" :active="0" v-if="order">
-                <van-step v-for="(trace, index) in order.traceList" :key="index">
-                    <h3>{{trace.opeRemark}}</h3>
-                    <p>{{trace.opeTime}}</p>
-                </van-step>
+          <!--            // 显示物流信息-->
+          <span class="sub_title">物流信息</span>
+          <van-steps direction="vertical" :active="0" v-if="order">
+            <van-step v-for="(trace, index) in order.traceList" :key="index">
+              <h3>{{trace.opeRemark}}</h3>
+              <p>{{trace.opeTime}}</p>
+            </van-step>
 
-            </van-steps>
+          </van-steps>
         </div>
+      </div>
     </div>
 </template>
 
 <script>
 
 import local from '../utils/storage'
+// eslint-disable-next-line import/extensions
 import titleView from '../components/CommonTitle'
 import arrowRight from '../assets/icon_arrow_right.png'
 import copyIcon from '../assets/icon_cppy.png'
@@ -145,6 +148,21 @@ export default {
       }).then((res) => {
         if (res.errno === 0) {
           this.order = res.data
+          const billArr = res.data.bill
+          if (billArr) {
+            let billTotalPrice = 0
+            let payTotalPrice = 0
+            billArr.forEach((bill) => {
+              billTotalPrice += bill.total_price
+              if (bill.pay_status == 2) {
+                payTotalPrice += bill.pay_money
+              }
+            })
+            this.order.payTotalPrice = payTotalPrice
+            this.order.billTotalPrice = billTotalPrice
+          }else  {
+            this.order.billTotalPrice = this.order.totalPrice
+          }
         } else {
           Dialog.alert({ message: res.errmsg })
         }
@@ -162,39 +180,40 @@ export default {
       console.log(`点击了我${this.showAddress}`)
       this.showAddress = !this.showAddress
     },
+    // eslint-disable-next-line camelcase
     topay($bill_id, $paytype) {
-          this.$fetch('/Expressorder/topay', {
-              order_id: $bill_id,
-              paytype: $paytype
-          }).then((res) => {
-              this.show = true
-              if (res.errno === 1) {
-                  Dialog({
-                      message:res.errmsg
-                  })
-                  return
-              }
-              console.dir(res)
-              // 创建订单成功 生成支付 去发起支付
-              const payData = {
-                  appId: res.data.appId,
-                  timeStamp: `${res.data.timeStamp }`,
-                  nonceStr: res.data.nonceStr,
-                  package: res.data.package,
-                  signType: res.data.signType,
-                  paySign: res.data.sign
-              }
-              this.onBridgeReady(payData)
+      this.$fetch('/Expressorder/topay', {
+        order_id: $bill_id,
+        paytype: $paytype
+      }).then((res) => {
+        this.show = true
+        if (res.errno === 1) {
+          Dialog({
+            message: res.errmsg
           })
-      },
-      onBridgeReady($payStr) {
-          WeixinJSBridge.invoke('getBrandWCPayRequest', $payStr,
-              (res) => {
-                  if (res.err_msg === 'get_brand_wcpay_request:ok') {
-                      // 使用以上方式判断前端返回,微信团队郑重提示：
-                      // res.err_msg将在用户支付成功后返回ok，但并不保证它绝对可靠。
-                  }
-              })
+          return
+        }
+        console.dir(res)
+        // 创建订单成功 生成支付 去发起支付
+        const payData = {
+          appId: res.data.appId,
+          timeStamp: `${res.data.timeStamp}`,
+          nonceStr: res.data.nonceStr,
+          package: res.data.package,
+          signType: res.data.signType,
+          paySign: res.data.sign
+        }
+        this.onBridgeReady(payData)
+      })
+    },
+    onBridgeReady($payStr) {
+      WeixinJSBridge.invoke('getBrandWCPayRequest', $payStr,
+        (res) => {
+          if (res.err_msg === 'get_brand_wcpay_request:ok') {
+            // 使用以上方式判断前端返回,微信团队郑重提示：
+            // res.err_msg将在用户支付成功后返回ok，但并不保证它绝对可靠。
+          }
+        })
     },
   },
   computed: {
@@ -235,6 +254,7 @@ export default {
 <style scoped lang="less">
   #app {
     background-color: #efeff4;
+    height: auto;
   }
   .express_no_box {
     display: block;
@@ -337,7 +357,6 @@ export default {
       }
     }
   }
-
   .content {
     padding: 10px;
     .card {
@@ -360,10 +379,12 @@ export default {
     }
     .order_bill {
       div {
+
         span {
           display: inline-block;
           width: 45%;
           height: 40px;
+          white-space: nowrap;
           line-height: 40px;
         }
         span:nth-child(2n) {

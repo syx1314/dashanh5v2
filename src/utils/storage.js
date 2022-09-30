@@ -15,6 +15,9 @@ const storage = {
   getUser() {
     return this.get('user')
   },
+  getUserId() {
+    return this.getUser().customer.id
+  },
   saveUser($data) {
     this.set('user', $data)
   }

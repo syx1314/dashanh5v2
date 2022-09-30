@@ -17,8 +17,11 @@ export default {
   -moz-osx-font-smoothing: grayscale;
   color: #2c3e50;
   background-color: #efeff4;
-  height: 100vh;
-  font-size: 15px;
+  font-size: 14px;
+}
+.place_holder_box {
+  background-color: #efeff4;
+  height: 60px;
 }
 * {
   padding: 0;

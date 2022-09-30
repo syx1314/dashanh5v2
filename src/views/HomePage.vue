@@ -11,7 +11,7 @@
           </van-swipe>
         </div>
         <div class="tips_box">
-          <van-notice-bar left-icon="volume-o" :scrollable="false" wrapable>
+          <van-notice-bar left-icon="volume-o" :scrollable="true" >
             <van-swipe
                 vertical
                 class="notice-swipe"
@@ -22,10 +22,11 @@
             </van-swipe>
           </van-notice-bar>
         </div>
-        <div class="express_item">
+        <div class="express_item" style="background-color: white">
           <p class="sub_title">快递优选</p>
-          <van-grid square :column-num="2">
-            <div class="grid_box" @click="toCreate(express)" v-for="(express,index) in expressList" :key="index">
+          <van-grid square :column-num="2" class="van-clearfix">
+            <div class="grid_box" @click="toCreate(express)"
+                 v-for="(express,index) in expressList" :key="index">
               <van-image :src="express.icon" class="fl"/>
               <div class="fl right_content">
                 <p>{{express.name}}</p>
@@ -62,7 +63,9 @@
         </div>
       </div>
     </div>
+    <div class="place_holder_box"/>
     <div class="tool_bar van-clearfix">
+      <div class="place_older_box"></div>
       <van-tabbar v-model="active" @change="onChange">
         <van-tabbar-item icon="home-o">寄快递</van-tabbar-item>
         <van-tabbar-item icon="search">订单</van-tabbar-item>
@@ -92,7 +95,7 @@ export default {
     order,
   },
   created() {
-      this.getIndex()
+    // this.getNotice()
     // 获取配置的 公众号信息
     // 获取公众号授权
     // https://open.weixin.qq.com/connect/oauth2/authorize?
@@ -100,13 +103,13 @@ export default {
     // appid=wx0d994eb4e6d18b96&redirect_uri=REDIRECT_URI&response_type=code&scope=snsapi_userinfo&state=STATE#wechat_redirect
     // window.location ='https://open.weixin.qq.com/connect/oauth2/authorize?appid=wx0d994eb4e6d18b96&redirect_uri=REDIRECT_URI&response_type=code&scope=snsapi_userinfo&state=STATE#wechat_redirect'
     // 第一步判断openid 是不是还存在
-
+    //
     // 判断是不是回调code redirect_uri/?code=CODE&state=STATE。
     const user = local.getUser()
     if (user) {
       // 说明此时登陆着
       console.dir(user)
-        this.getIndex()
+      this.getIndex()
     } else {
       // 未登录  去请求授权登录
       const getParam = window.location.href
@@ -124,7 +127,7 @@ export default {
             if (res.errno === 0) {
               // 登录成功 保存用户信息
               local.saveUser(res.data)
-                this.getIndex()
+              this.getIndex()
             } else {
               Dialog.alert(
                 {
@@ -149,7 +152,7 @@ export default {
               },
             )
             if (res.errno === 0) {
-              // window.location = res['data'];
+              window.location.href = res.data
             }
           })
       }
@@ -163,23 +166,23 @@ export default {
       // 1 京东  2 京东得物 3德邦 4申通 5 圆通 6 极兔 7 顺丰
       console.log(`点击了我${$e}`)
       if (!$e.isEnable) {
-          Dialog.alert({
-              message: '暂时不支持线上下单,请联系人工'
-          })
-          return
+        Dialog.alert({
+          message: '暂时不支持线上下单,请联系人工'
+        })
+        return
       }
-      this.$router.push({ path: 'sendPost', query: { type: $e.id } })
+      this.$router.push({ path: 'sendPost', query: { type: $e.id, name: $e.name } })
     },
     getIndex() {
-        this.$fetch('/Index/getIndex', '')
-            .then((res) => {
-                console.dir(res.data)
-                if (res.errno === 0) {
-                    this.noticeList = res.data.noticeList
-                    this.images = res.data.bannerList
-                    this.expressList = res.data.expressList
-                }
-            })
+      this.$fetch('Index/getIndex', '')
+        .then((res) => {
+          console.dir(res.data)
+          if (res.errno === 0) {
+            this.noticeList = res.data.noticeList
+            this.images = res.data.bannerList
+            this.expressList = res.data.expressList
+          }
+        }).catch(() => {})
     },
     getQueryVariable($e) {
       const query = window.location.href.split('?')[1]
@@ -197,12 +200,14 @@ export default {
       this.$router.push({ path: 'MyAddress' })
     },
     getNotice() {
-      this.$fetch('/Index/getNotice', '')
+      this.$fetch('Index/getNotice', '')
         .then((res) => {
           console.dir(res.data)
           if (res.errno === 0) {
             this.noticeList = res.data
           }
+        }).catch((e) => {
+          console.log(`catch${e}`)
         })
     },
   },
@@ -216,9 +221,9 @@ export default {
 
 <style lang="less" scoped>
 .content {
-  background-color: white;
-  height: 100vh;
-  margin-bottom: 50px;
+}
+.place_older_box {
+  height: 45px;
 }
 .notice-swipe {
   height: 40px;
@@ -265,7 +270,7 @@ export default {
 }
 
 .article_box {
-
+  margin-top: 10px;
   height: 50px;
      img {
        width: 100%;

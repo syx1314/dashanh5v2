@@ -17,6 +17,7 @@ import local from '../utils/storage'
 // eslint-disable-next-line import/extensions
 import titleView from '../components/CommonTitle'
 import Vue from 'vue'
+import { Dialog } from 'vant'
 
 export default {
   name: 'MyAddress',
@@ -31,20 +32,20 @@ export default {
       ads: '',
       list: [],
       chosenAddressId: '',
-      userId:''
+      userId: ''
     }
   },
   components: {
     titleView,
   },
   created() {
-      const user = local.getUser()
-      if (user) {
-          this.userId = user.customer.id
-      }
+    const user = local.getUser()
+    if (user) {
+      this.userId = user.customer.id
+    }
     this.getAddress(this.userId)
     if (this.$route.query.flag) {
-        this.flag = this.$route.query.flag
+      this.flag = this.$route.query.flag
     }
   },
   methods: {
@@ -52,23 +53,23 @@ export default {
       this.$router.push({ name: 'AddressEdit' })
     },
     clickItem($e) {
-      console.log('选择了地址'+$e)
-        let saveData= {
-            person:$e.name,
-            phonenum:$e.tel,
-            province:$e.province,
-            city:$e.city,
-            county:$e.county,
-            town:$e.town,
-            detail:$e.addressDetail,
-        }
-        if (this.flag === 'go') {
-            local.set('sendAddress', saveData)
-            this.$router.back()
-        } else if (this.flag === 'to'){
-            local.set('receiveAddress', saveData)
-            this.$router.back()
-        }
+      console.log(`选择了地址${$e}`)
+      const saveData = {
+        person: $e.name,
+        phonenum: $e.tel,
+        province: $e.province,
+        city: $e.city,
+        county: $e.county,
+        town: $e.town,
+        detail: $e.addressDetail,
+      }
+      if (this.flag === 'go') {
+        local.set('sendAddress', saveData)
+        this.$router.back()
+      } else if (this.flag === 'to') {
+        local.set('receiveAddress', saveData)
+        this.$router.back()
+      }
     },
     getAddress($userId) {
       this.$fetch(`/Customer/getAddress?userId=${$userId}`, '')
@@ -89,10 +90,14 @@ export default {
                 addressDetail: data[i].address_detail,
                 // eslint-disable-next-line max-len
                 address: data[i].province + data[i].city + data[i].county + data[i].town + data[i].address_detail,
-                isDefault: data[i]['"deafult'] !== 0,
+                isDefault: data[i].deafult === 1,
               }
               Vue.set(this.list, i, temp)
             }
+          } else {
+            Dialog.alert({
+              message: res.errmsg
+            })
           }
         })
     },
@@ -105,7 +110,7 @@ export default {
 
 <style lang="less" scoped>
 .content {
- height: 100vh;
+
 }
 
 .card {
@@ -116,8 +121,17 @@ export default {
 
 }
 
-.van-radio__icon {
+.van-icon .van-radio__icon--round{
   display: none !important;
 }
 
+//.van-address-item__edit {
+//  display: none;
+//}
+</style>
+
+<style lang="less">
+.van-cell .van-radio .van-radio__icon {
+  display: none !important;
+}
 </style>

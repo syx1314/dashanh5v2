@@ -1,79 +1,82 @@
 <template>
     <div id='app'>
         <title-view v-bind:title="title"/>
-        <div class='card'>
+        <div class="content">
+          <div class='card'>
             <div class='send'>
-                <div class="icon_box">
-                    <img src='https://cdn.kuaidi100.com/images/m/dispatch/ico_send.png'>
-                </div>
-                <div class='address_info' @click='selSendAddress'>
-                    <div v-if="sendName">{{ sendName }} {{ sendPhone }}</div>
-                    <div v-else>新建寄件人</div>
-                    <div>{{ goAddress ? goAddress : '请输入寄件地址' }}</div>
-                </div>
-                <van-image :src="require('@/assets/icon_select_address.png')"
-                          width="30" height="30" style="margin-top: 10px"
-                          @click="toSelectAddress('go')"/>
+              <div class="icon_box">
+                <img src='https://cdn.kuaidi100.com/images/m/dispatch/ico_send.png'>
+              </div>
+              <div class='address_info' @click='selSendAddress'>
+                <div v-if="sendName">{{ sendName }} {{ sendPhone }}</div>
+                <div v-else>新建寄件人</div>
+                <div>{{ goAddress ? goAddress : '请输入寄件地址' }}</div>
+              </div>
+              <van-image :src="require('@/assets/icon_select_address.png')"
+                         width="30" height="30" style="margin-top: 10px"
+                         @click="toSelectAddress('go')"/>
             </div>
             <div class='receive'>
-                <div class="icon_box">
-                    <img src='https://cdn.kuaidi100.com/images/m/dispatch/ico_shou.png'>
-                </div>
-                <div class='address_info' @click='selReceiveAddress'>
-                    <div v-if="receiveName">{{ receiveName }} {{ receivePhone }}}</div>
-                    <div v-else>新建收件人</div>
-                    <div>{{ toAddress ? toAddress : '请输入收件地址' }}</div>
-                </div>
+              <div class="icon_box">
+                <img src='https://cdn.kuaidi100.com/images/m/dispatch/ico_shou.png'>
+              </div>
+              <div class='address_info' @click='selReceiveAddress'>
+                <div v-if="receiveName">{{ receiveName }} {{ receivePhone }}</div>
+                <div v-else>新建收件人</div>
+                <div>{{ toAddress ? toAddress : '请输入收件地址' }}</div>
+              </div>
               <van-image :src="require('@/assets/icon_select_address.png')"
                          width="30" height="30" style="margin-top: 10px"
                          @click="toSelectAddress('to')"/>
             </div>
-        </div>
-        <div class='card goods_info_box'>
+          </div>
+          <div class='card goods_info_box '>
             <div class="sub_title">商品信息</div>
             <van-radio-group v-model="shopName" direction="horizontal" class="shopNameRg">
-                <van-radio name="猫粮">猫粮</van-radio>
-                <van-radio name="衣服">衣服</van-radio>
-                <van-radio name="鞋子">鞋子</van-radio>
-                <van-radio name="其它">其它</van-radio>
-                <input v-model="shopName" placeholder="请输入物品信息" class="shopName"/>
+              <van-radio name="猫粮">猫粮</van-radio>
+              <van-radio name="衣服">衣服</van-radio>
+              <van-radio name="鞋子">鞋子</van-radio>
+              <van-radio name="其它">其它</van-radio>
+              <input v-model="shopName" placeholder="请输入物品信息" class="shopName"/>
             </van-radio-group>
 
             <div class="weight_box">
-                <span>预估重量</span>
-                <van-stepper v-model="weight" class="numPicker"/>
+              <span>预估重量</span>
+              <van-stepper v-model="weight" class="numPicker"/>
             </div>
-        </div>
-        <div class='card goods_info_box'>
-            <div class="sub_title">保价(未保价物品最告赔6倍运费)</div>
-            <div class="weight_box">
-                <span>自定义货物价值</span>
-                <van-field v-model="baojiaPrice" placeholder="输入保价金额" class="baojiaPrice"/>
+          </div>
+          <div class='card goods_info_box' >
+            <div class="sub_title" style="display: none">保价(未保价物品最告赔6倍运费)</div>
+            <div class="weight_box" style="display: none">
+              <span>自定义货物价值</span>
+              <van-field v-model="baojiaPrice" placeholder="输入保价金额" class="baojiaPrice"/>
             </div>
             <span class="baojiaRule" v-html="priceInfo.remark"/>
-        </div>
-        <div class='card goods_info_box'>
+          </div>
+          <div class='card goods_info_box'>
             <div class="sub_title">运费详情</div>
             <div class="price_box">
-                <div>{{priceInfo.priceA >0 ? '原价':'首重'}}</div>
-                <div>{{ priceInfo.discount >0 ? priceInfo.totalFeeOri : priceInfo.priceA }}</div>
+              <div>{{priceInfo.priceA >0 ? '原价':'首重'}}</div>
+              <div>{{ priceInfo.discount >0 ? priceInfo.totalFeeOri : priceInfo.priceA }}</div>
             </div>
             <div class="price_box">
-                <div>{{priceInfo.discount >0 ? '折扣':'续重'}}</div>
-                <div>{{priceInfo.discount >0 ? priceInfo.discount : priceInfo.priceB }}</div>
+              <div>{{priceInfo.discount >0 ? '折扣':'续重'}}</div>
+              <div>{{priceInfo.discount >0 ? priceInfo.discount : priceInfo.priceB }}</div>
             </div>
             <div class="price_box" v-if="priceInfo.serviceCharge > 0">
-                <div>服务费</div>
-                <div>{{ priceInfo.serviceCharge }}</div>
+              <div>服务费</div>
+              <div>{{ priceInfo.serviceCharge }}</div>
             </div>
+          </div>
+          <div  class="place_holder_box"></div>
         </div>
         <div class='bottom'>
             <div class='price'>
                 <div class='max_price'>￥{{ priceInfo.totalPrice }}</div>
                 <span>{{ priceObj }}</span>
             </div>
-            <div class='createOrder' @click="createMyOrder" v-show="show">京东下单</div>
-            <div class='createOrder createOrderEnable' v-show="!show">京东下单</div>
+            <div class='createOrder' @click="createMyOrder" v-show="showCreateBtn">{{title}}下单</div>
+            <div class='createOrder createOrderEnable' v-show="!showCreateBtn">{{title}}下单</div>
         </div>
     </div>
 </template>
@@ -81,8 +84,9 @@
 <script>
 
 import local from '../utils/storage'
+// eslint-disable-next-line import/extensions
 import titleView from '../components/CommonTitle'
-import {Dialog} from "vant";
+import { Dialog } from 'vant'
 
 export default {
   name: 'SendPost',
@@ -108,13 +112,13 @@ export default {
       priceObj: '',
       shopName: '',
       packageNum: 1,
-      weight: 5,
+      weight: 1,
       maxPrice: 0,
       channel: '',
       myPrice: '',
-      show: false,
+      showCreateBtn: false,
       baojiaPrice: '',
-      type: 6,
+      type: 0,
       priceInfo: ''
     }
   },
@@ -132,6 +136,7 @@ export default {
     if (this.$route.query.type) {
       console.log(`类型${this.$route.query.type}`)
       this.type = this.$route.query.type
+      this.title = this.$route.query.name
     }
     this.sendAddress = local.get('sendAddress')
     if (this.sendAddress) {
@@ -153,9 +158,9 @@ export default {
       this.receiveTown = this.receiveAddres.town
       this.toAddress = `${this.receiveAddres.province}/${this.receiveAddres.city}/${this.receiveAddres.county}/${this.receiveAddres.town}/${this.receiveAddres.detail}`
     }
-    // if (this.sendAddress && this.receiveAddres) {
-    //   this.checkMatchChannel()
-    // }
+    if (this.sendAddress && this.receiveAddres) {
+      this.estimateprice()
+    }
   },
   methods: {
     selSendAddress() {
@@ -195,13 +200,16 @@ export default {
     // 创建订单
     createMyOrder() {
       if (!this.shopName || !this.weight) {
-        alert('请输入商品名字 或者重量2')
+        Dialog({
+          message: '请输入商品名字 或者重量'
+        })
         return
       }
       if (!this.priceInfo) {
-        alert('请输入运费1')
+        Dialog('运费信息没有获取到')
         return
       }
+      this.showCreateBtn = false
       // this.show = false
       const order = {
         userid: this.user.customer.id,
@@ -237,15 +245,14 @@ export default {
       this.$post('/Expressorder/create_order', JSON.stringify(order)).then((res) => {
         this.show = true
         console.dir(res)
-          if (res['errno'] === 0) {
-              // 创建订单成功 生成支付 去发起支付
-              this.topay(res.data, 1)
-          }else {
-              Dialog.alert({
-                  message:res['errmsg']
-              })
-          }
-
+        if (res['errno'] === 0) {
+          // 创建订单成功 生成支付 去发起支付
+          this.topay(res.data, 1)
+        } else {
+          Dialog.alert({
+            message: res['errmsg']
+          })
+        }
       })
     },
     // eslint-disable-next-line camelcase
@@ -259,31 +266,53 @@ export default {
         // 创建订单成功 生成支付 去发起支付
         const payData = {
           appId: res.data.appId,
-          timeStamp: `${res.data.timeStamp }`,
+          timeStamp: `${res.data.timeStamp}`,
           nonceStr: res.data.nonceStr,
           package: res.data.package,
           signType: res.data.signType,
           paySign: res.data.sign
         }
-        this.onBridgeReady(payData)
+        this.onBridgeReady(payData, $order_id, $paytype)
       })
     },
-    onBridgeReady($payStr) {
+    // eslint-disable-next-line camelcase
+    onBridgeReady($payStr, $order_id, $paytype) {
       WeixinJSBridge.invoke('getBrandWCPayRequest', $payStr,
         (res) => {
           if (res.err_msg === 'get_brand_wcpay_request:ok') {
             // 使用以上方式判断前端返回,微信团队郑重提示：
             // res.err_msg将在用户支付成功后返回ok，但并不保证它绝对可靠。
+            Dialog({
+              title: '支付成功',
+              message: '是否继续下单,还是返回首页'
+            }).then(() => {
+              // 刷新页面
+              this.$router.go(0)
+            }).catch(() => {
+              this.$router.push({ path: 'HomePage' })
+            })
+          } else {
+            Dialog({
+              title: '支付失败',
+              message: '是否继续支付,还是返回首页'
+            }).then(() => {
+            // 继续支
+              this.topay($order_id, $paytype)
+            }).catch(() => {
+              this.$router.push({ path: 'HomePage' })
+            })
           }
         })
     },
     createOrder() {
       if (!this.shopName || !this.wight) {
-        alert('请输入商品名字 或者重量')
+        Dialog({
+          message: '请输入商品名字 或者重量'
+        })
         return
       }
       if (!this.priceInfo) {
-        alert('请输入运费')
+        Dialog('运费信息没有获取到')
         return
       }
       this.show = false
@@ -326,7 +355,9 @@ export default {
         insured: null,
         collectionValue: false,
         collectionMoney: null,
+        // eslint-disable-next-line max-len
         tempReceiveAddress: this.receiveAddres.province + this.receiveAddres.city + this.receiveAddres.county + this.receiveAddres.address + this.receiveAddres.contact + this.receiveAddres.mobile,
+        // eslint-disable-next-line max-len
         tempSendAddress: this.sendAddress.province + this.sendAddress.city + this.sendAddress.county + this.sendAddress.address + this.sendAddress.contact + this.sendAddress.mobile,
         customerFreight: this.myPrice,
         customerFreightType: this.channel,
@@ -343,6 +374,7 @@ export default {
     },
     // 数据完整
     isComplete() {
+      // eslint-disable-next-line max-len
       return this.sendName && this.sendPhone && this.goAddress && this.receiveName && this.receivePhone && this.toAddress && this.weight
     }
   },
@@ -406,6 +438,9 @@ export default {
         margin-top: 10px;
       }
     }
+  }
+  .receive {
+    border-bottom: 0;
   }
 
   .weight_box {
@@ -500,7 +535,8 @@ export default {
       background-color: #317ee7;
       height: 40px;
       line-height: 40px;
-      width: 100px;
+      padding-left: 10px;
+      padding-right: 10px;
       border-radius: 40px;
       margin-top: 4px;
       margin-right: 10px;

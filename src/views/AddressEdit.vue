@@ -3,7 +3,7 @@
         <title-view title="地址编辑"/>
         <div class="card address_ipt">
             <textarea placeholder="智能填写粘贴文本" v-model="address"/>
-            <span class="clear" @click="parseAddress">清空</span>
+            <span class="clear" @click="clear">清空</span>
             <span class="sibei" @click="parseAddress">识别</span>
         </div>
         <van-address-edit
@@ -35,7 +35,7 @@ export default {
         tel: '',
         province: '',
         city: '',
-        county: '',
+        county: '', // 区县
         town: '',
         addressDetail: '',
         areaCode: '',
@@ -69,24 +69,29 @@ export default {
   },
   methods: {
     findAreaCode($county) {
-        for (const countyListKey in areaList.county_list) {
-            if (areaList.county_list[countyListKey] === $county) {
-                this.address_info.areaCode = countyListKey
-                break
-            }
+      // eslint-disable-next-line no-restricted-syntax,guard-for-in
+      for (const countyListKey in areaList.county_list) {
+        console.log(areaList.county_list[countyListKey])
+        if (areaList.county_list[countyListKey] == $county) {
+          this.address_info.areaCode = countyListKey
+          break
         }
+      }
+    },
+    clear() {
+      this.address_info = null
     },
     onAdd() {
       console.log('点击了我')
     },
     onDelete($e) {
-        this.$fetch(`/Customer/delAddress?userId=${this.userId}&id=${$e.id}`,).then((res) => {
-            Dialog.alert({
-                message: res.errmsg
-            }).then(() =>{
-                this.$router.back()
-            })
+      this.$fetch(`/Customer/delAddress?userId=${this.userId}&id=${$e.id}`,).then((res) => {
+        Dialog.alert({
+          message: res.errmsg
+        }).then(() => {
+          this.$router.back()
         })
+      })
     },
     setData() {
       if (this.ads) {
@@ -96,13 +101,13 @@ export default {
         this.address_info.city = this.ads.city
         this.address_info.county = this.ads.county
         this.address_info.town = this.ads.town
-        this.address_info.addressDetail = this.ads.detail
+        this.address_info.addressDetail = this.ads.town + this.ads.detail
         console.dir(this.address_info)
         this.findAreaCode(this.address_info.county)
       }
     },
     parseAddress() {
-      this.$fetch(`/Expressorder/nlpAddress?address=${decodeURI(this.address)}`, '')
+      this.$fetch(`Expressorder/nlpAddress?address=${decodeURI(this.address)}`, '')
         .then((res) => {
           console.log(res)
           this.ads = res.data
@@ -119,13 +124,14 @@ export default {
         city: $e.city,
         county: $e.county,
         town: $e.town,
+        isDefault: $e.isDefault,
         address_detail: $e.addressDetail
       }
-      this.$post(`/Customer/saveAddress?userId=${this.userId}`, JSON.stringify(postData)).then((res) => {
+      this.$post(`Customer/saveAddress?userId=${this.userId}`, JSON.stringify(postData)).then((res) => {
         Dialog.alert({
           message: res.errmsg
-        }).then(() =>{
-            this.$router.back()
+        }).then(() => {
+          this.$router.back()
         })
       })
     }

@@ -12,7 +12,7 @@
                 <div class="order_item van-clearfix" v-for="(order,index) in list" :key="index"
                      :title="index" @click="toDetail(order.id)">
                     <div class="hd">
-                        <span>圆通快递:{{ order.trackingNum }}</span>
+                        <span>{{order.channelName }}:{{order.trackingNum }}</span>
                         <span class="fr">复制单号</span>
                     </div>
                     <div class="bd van-clearfix">
@@ -32,9 +32,11 @@
                     <div class="bottom van-clearfix">
                         <div>
                             <span>{{ order.create_time }}</span>
-                            <span class="price_box fr"><span class="price">￥{{order.totalPrice}}</span></span>
+                            <span class="price_box fr"><span class="price">
+                              ￥{{order.totalPrice}}</span></span>
                         </div>
-                        <div class="van-clearfix"  v-if="order.overWeightStatus == 1" @click="payOtherFee">
+                        <div class="van-clearfix"  v-if="order.overWeightStatus == 1"
+                             @click="payOtherFee">
                             <span class="payOutWeight" >补差价</span>
                         </div>
                     </div>
@@ -45,57 +47,64 @@
 </template>
 
 <script>
-import  arrowRight from '../assets/icon_arrow_right.png'
-import CommonTitle  from "./CommonTitle";
-    export default {
-        name: 'Order',
-        data() {
-            return {
-                title:'我的订单',
-                list: [],
-                loading: false,
-                finished: false,
-                refreshing: false,
-                arrowRight
-            }
-        },
-        created() {
-            this.onLoad()
-            console.log("智星了我")
-        },
-        components: {
-            CommonTitle
-        },
-        methods: {
-            onLoad() {
-                this.$fetch('Expressorder/queryOrder', '').then((res) => {
-                    if (res && res['errno'] == 0) {
-                        this.list = res['data'].data
-                    }
-                    if (this.list['current_page']== this.list['last_page']){
-                        this.finished =true
-                    }
-                    console.dir(this.list)
-                    this.loading = false
-                    this.refreshing = false
-                })
-            },
-            onRefresh() {
-                console.log('率先你')
-                // 清空列表数据
-                this.list =null;
-                this.finished = false
+import local from '../utils/storage'
+import arrowRight from '../assets/icon_arrow_right.png'
+// eslint-disable-next-line import/extensions
+import CommonTitle from './CommonTitle'
 
-                // 重新加载数据
-                // 将 loading 设置为 true，表示处于加载状态
-                this.loading = true
-                this.onLoad()
-            },
-            toDetail($id) {
-                this.$router.push({ name: 'OrderDetails', query: { id: $id } })
-            }
-        }
+export default {
+  name: 'Order',
+  data() {
+    return {
+      title: '我的订单',
+      list: [],
+      loading: false,
+      finished: false,
+      refreshing: false,
+      arrowRight,
+      userid: ''
     }
+  },
+  created() {
+    this.userid = local.getUserId()
+    if (this.userid) {
+      this.onLoad()
+    }
+  },
+  components: {
+    CommonTitle
+  },
+  methods: {
+    onLoad() {
+      this.userid = local.getUserId()
+      this.$fetch(`Expressorder/queryOrder?userid=${this.userid}`, '').then((res) => {
+        if (res && res.errno == 0) {
+          this.list = res.data.data
+        }
+        if (this.list.current_page == this.list.last_page) {
+          this.finished = true
+        }
+        console.dir(this.list)
+        this.loading = false
+        this.refreshing = false
+      })
+    },
+    onRefresh() {
+      console.log('率先你')
+      // 清空列表数据
+      this.list = null
+      this.finished = false
+
+      // 重新加载数据
+      // 将 loading 设置为 true，表示处于加载状态
+      this.loading = true
+      this.onLoad()
+    },
+    toDetail($id) {
+      this.$router.push({ name: 'OrderDetails', query: { id: $id } })
+    }
+  }
+}
 </script>
 
 <style scoped lang="less">
