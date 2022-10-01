@@ -131,6 +131,7 @@ export default {
     console.log(`登录信息：${this.user.customer.id}`)
     if (!this.user) {
       // 需要登录
+      this.$router.push({ name: 'HomePage' })
       return
     }
     if (this.$route.query.type) {
@@ -185,6 +186,9 @@ export default {
           if (!this.isString(res.data)) {
             this.show = true
             this.priceInfo = res.data
+            this.showCreateBtn = true
+          } else {
+            Dialog('获取价格失败')
           }
         })
     },
@@ -282,24 +286,34 @@ export default {
           if (res.err_msg === 'get_brand_wcpay_request:ok') {
             // 使用以上方式判断前端返回,微信团队郑重提示：
             // res.err_msg将在用户支付成功后返回ok，但并不保证它绝对可靠。
-            Dialog({
+            Dialog.confirm({
               title: '支付成功',
               message: '是否继续下单,还是返回首页'
             }).then(() => {
               // 刷新页面
               this.$router.go(0)
             }).catch(() => {
-              this.$router.push({ path: 'HomePage' })
+              this.$router.push({ name: 'HomePage' })
             })
-          } else {
-            Dialog({
+          } else if (res.err_msg === 'get_brand_wcpay_request:fail') {
+            Dialog.confirm({
               title: '支付失败',
               message: '是否继续支付,还是返回首页'
             }).then(() => {
             // 继续支
               this.topay($order_id, $paytype)
             }).catch(() => {
-              this.$router.push({ path: 'HomePage' })
+              this.$router.push({ name: 'HomePage' })
+            })
+          } else {
+            Dialog.confirm({
+              title: '支付取消',
+              message: '是否继续支付,还是返回首页'
+            }).then(() => {
+              // 继续支
+              this.topay($order_id, $paytype)
+            }).catch(() => {
+              this.$router.push({ name: 'HomePage' })
             })
           }
         })
