@@ -7,7 +7,7 @@
                     :finished="finished"
                     finished-text="没有更多了"
                     @load="onLoad"
-                    offset="1500"
+                    offset="10"
             >
                 <div class="order_item van-clearfix" v-for="(order,index) in list" :key="index"
                      :title="index" @click="toDetail(order.id)">
@@ -36,7 +36,7 @@
                               ￥{{order.totalPrice}}</span></span>
                         </div>
                         <div class="van-clearfix"  v-if="order.overWeightStatus == 1"
-                             @click="payOtherFee">
+                             @click="toDetail(order.id)">
                             <span class="payOutWeight" >补差价</span>
                         </div>
                     </div>
@@ -49,19 +49,21 @@
 <script>
 import local from '../utils/storage'
 import arrowRight from '../assets/icon_arrow_right.png'
-// eslint-disable-next-line import/extensions
-import CommonTitle from './CommonTitle'
+// eslint-disable-next-line import/extensions,import/no-unresolved
+import CommonTitle from '../components/CommonTitle'
+
 
 export default {
   name: 'Order',
   data() {
     return {
       title: '我的订单',
-      list: [],
+      list: null,
       loading: false,
       finished: false,
       refreshing: false,
       arrowRight,
+      curPage: 1,
       userid: ''
     }
   },
@@ -77,11 +79,16 @@ export default {
   methods: {
     onLoad() {
       this.userid = local.getUserId()
-      this.$fetch(`Expressorder/queryOrder?userid=${this.userid}`, '').then((res) => {
+      this.$fetch(`Expressorder/queryOrder?userid=${this.userid}&page=${this.curPage}`, '').then((res) => {
         if (res && res.errno == 0) {
-          this.list = res.data.data
+          if (!this.list) {
+            this.list = res.data.data
+          } else {
+            this.list = this.list.concat(res.data.data)
+          }
         }
-        if (this.list.current_page == this.list.last_page) {
+        this.curPage = this.curPage + 1
+        if (res.data.current_page ==  res.data.last_page) {
           this.finished = true
         }
         console.dir(this.list)
@@ -94,7 +101,7 @@ export default {
       // 清空列表数据
       this.list = null
       this.finished = false
-
+      this.curPage = 0
       // 重新加载数据
       // 将 loading 设置为 true，表示处于加载状态
       this.loading = true

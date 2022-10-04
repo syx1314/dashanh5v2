@@ -161,6 +161,7 @@ export default {
     }
     if (this.sendAddress && this.receiveAddres) {
       this.estimateprice()
+      this.showCreateBtn = true
     }
   },
   methods: {

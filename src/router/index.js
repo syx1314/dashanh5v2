@@ -12,18 +12,16 @@ import MyAddress from '@/views/MyAddress'
 import AddressEdit from '@/views/AddressEdit'
 // eslint-disable-next-line import/extensions
 import HomePage from '@/views/HomePage'
+
+
 // eslint-disable-next-line import/extensions
 import OrderDetails from '@/views/OrderDetails'
 
 Vue.use(Router)
 
 export default new Router({
+  mode: 'history',
   routes: [
-    {
-      path: '/',
-      name: 'HelloWorld',
-      component: HelloWorld
-    },
     {
       path: '/sendPost',
       name: 'SendPost',
@@ -47,7 +45,25 @@ export default new Router({
     {
       path: '/HomePage',
       name: 'HomePage',
-      component: HomePage
+      component: HomePage,
+      children: [
+
+        {
+          path: '',
+          name: 'Home',
+          component: () => import('@/views/Home')
+        },
+        {
+          path: '/HomePage/Order',
+          name: 'Order',
+          component: () => import('@/views/Order')
+        },
+        {
+          path: '/HomePage/My',
+          name: 'My',
+          component: () => import('@/views/My')
+        }
+      ]
     },
     {
       path: '/OrderDetails',
