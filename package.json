@@ -9,8 +9,10 @@
     "mp"
   ],
   "scripts": {
+    "server_dev": "set NODE_OPTIONS=\"--openssl-legacy-provider\" & npm run web\n",
+    "server_build": "set NODE_OPTIONS=\"--openssl-legacy-provider\" & npm run build\n",
     "start": "npm run mp",
-    "web": "cross-env NODE_ENV=development webpack-dev-server --inline --progress --config build/webpack.dev.config.js",
+    "web":  "cross-env NODE_ENV=development webpack-dev-server  --inline --progress --config build/webpack.dev.config.js",
     "mp": "rimraf dist/mp/common && cross-env NODE_ENV=development webpack --config build/webpack.mp.config.js --progress --hide-modules",
     "lint": "eslint --ext .js,.vue src --fix",
     "build": "rimraf dist/web && cross-env NODE_ENV=production webpack --config build/webpack.prod.config.js --progress --hide-modules",

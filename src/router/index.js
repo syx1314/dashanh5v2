@@ -1,46 +1,33 @@
 import Vue from 'vue'
 import Router from 'vue-router'
-// eslint-disable-next-line import/extensions
-import HelloWorld from '@/components/HelloWorld'
-// eslint-disable-next-line import/extensions
-import SendPost from '@/views/SendPost'
-// eslint-disable-next-line import/extensions
-import WriteAddress from '@/views/WriteAddress'
-// eslint-disable-next-line import/extensions
-import MyAddress from '@/views/MyAddress'
-// eslint-disable-next-line import/extensions
-import AddressEdit from '@/views/AddressEdit'
+
+
 // eslint-disable-next-line import/extensions
 import HomePage from '@/views/HomePage'
-
-
-// eslint-disable-next-line import/extensions
-import OrderDetails from '@/views/OrderDetails'
 
 Vue.use(Router)
 
 export default new Router({
-  mode: 'history',
   routes: [
     {
       path: '/sendPost',
       name: 'SendPost',
-      component: SendPost
+      component: () => import(/* webpackChunkName: 'SendPost' */ '@/views/SendPost')
     },
     {
       path: '/WriteAddress',
       name: 'WriteAddress',
-      component: WriteAddress
+      component: () => import(/* webpackChunkName: 'WriteAddress' */ '@/views/WriteAddress')
     },
     {
       path: '/MyAddress',
       name: 'MyAddress',
-      component: MyAddress
+      component: () => import(/* webpackChunkName: 'MyAddress' */ '@/views/MyAddress')
     },
     {
       path: '/AddressEdit',
       name: 'AddressEdit',
-      component: AddressEdit
+      component: () => import(/* webpackChunkName: 'AddressEdit' */ '@/views/AddressEdit')
     },
     {
       path: '/HomePage',
@@ -49,26 +36,31 @@ export default new Router({
       children: [
 
         {
-          path: '',
+          path: '/',
           name: 'Home',
-          component: () => import('@/views/Home')
+          component: () => import(/* webpackChunkName: 'Home' */ '@/views/Home')
         },
         {
           path: '/HomePage/Order',
           name: 'Order',
-          component: () => import('@/views/Order')
+          component: () => import(/* webpackChunkName: 'Order' */ '@/views/Order')
         },
         {
           path: '/HomePage/My',
           name: 'My',
-          component: () => import('@/views/My')
+          component: () => import(/* webpackChunkName: 'My' */ '@/views/My')
         }
       ]
     },
     {
       path: '/OrderDetails',
       name: 'OrderDetails',
-      component: OrderDetails
+      component: () => import(/* webpackChunkName: 'OrderDetails' */ '@/views/OrderDetails')
     },
+    {
+      path: '/Bianming',
+      name: 'Bianming',
+      component: () => import(/* webpackChunkName: 'OrderDetails' */ '@/views/Bianming')
+    }
   ]
 })

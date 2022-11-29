@@ -6,7 +6,7 @@
         <div class="banner">
           <van-swipe :autoplay="3000">
             <van-swipe-item v-for="(image, index) in images" :key="index">
-              <img v-lazy="image" style="height: 200px;width: 100%"/>
+              <img v-lazy="image" style="height: 150px;width: 100%"/>
             </van-swipe-item>
           </van-swipe>
         </div>
@@ -15,14 +15,34 @@
             <van-swipe
                 vertical
                 class="notice-swipe"
-                :autoplay="5000"
+                :autoplay="15000"
                 :show-indicators="false">
               <van-swipe-item v-for="(notice,index) in noticeList" :key="index">{{ notice.content }}
               </van-swipe-item>
             </van-swipe>
           </van-notice-bar>
         </div>
-        <div class="express_item" style="background-color: white">
+        <div class="recomed_hd_box">
+          <div class="recomend_title">
+            <img src="../assets/hot.png">
+            <span>热门推荐</span>
+          </div>
+          <div class="recomend_box ">
+            <div class="van-clearfix" @click="jumpMoudle('Bianming')">
+              <span><img :src="bianming" width="50"/></span>
+              <span>生活缴费</span>
+            </div>
+            <div class="van-clearfix" @click="jumpMoudle('yule')">
+              <span> <img :src="yule" width="50"/></span>
+              <span>娱乐</span>
+            </div>
+            <div class="van-clearfix" @click="jumpMoudle('shenghuo')">
+              <span><img :src="shenghuo" width="50"/></span>
+              <span>同城</span>
+            </div>
+          </div>
+        </div>
+        <div class="express_item" style="background-color: white;padding-top: 10px">
           <p class="sub_title">快递优选</p>
           <van-grid square :column-num="2" class="van-clearfix">
             <div class="grid_box" @click="toCreate(express)"
@@ -46,7 +66,11 @@
 
 <script>
 import local from '../utils/storage'
-import { Dialog } from 'vant'
+import { Dialog, Toast } from 'vant'
+
+import bianming from '../assets/bianming.png'
+import shenghuo from '../assets/shenghuo.png'
+import yule from '../assets/yule.png'
 
 export default {
   name: 'Home',
@@ -54,7 +78,10 @@ export default {
     return {
       noticeList: [],
       images: [],
-      expressList: []
+      expressList: [],
+      bianming,
+      shenghuo,
+      yule
     }
   },
   components: {
@@ -134,7 +161,7 @@ export default {
         })
         return
       }
-      this.$router.push({ path: 'sendPost', query: { type: $e.id, name: $e.name } })
+      this.$router.push({ path: '/sendPost', query: { type: $e.id, name: $e.name } })
     },
     getIndex() {
       this.$fetch('Index/getIndex', '')
@@ -173,6 +200,13 @@ export default {
           console.log(`catch${e}`)
         })
     },
+    jumpMoudle($module) {
+      if ($module === 'Bianming') {
+        this.$router.push({ name: 'Bianming' })
+      } else {
+        Toast('敬请期待！！！')
+      }
+    }
   }
 }
 </script>
@@ -186,6 +220,52 @@ export default {
 .notice-swipe {
   height: 40px;
   line-height: 40px;
+}
+.recomed_hd_box {
+  background-image: url("../assets/bg_personal_balance.png");
+  margin-left: 10px;
+  margin-right: 10px;
+  border-radius: 10px;
+  .recomend_title {
+    padding:10px;
+    img {
+      vertical-align: middle;
+      width: 20px;
+    }
+    span {
+      font-size: 14px;
+      margin-left: 5px;
+      font-weight: 700;
+    }
+  }
+  .recomend_box {
+    overflow: hidden;
+    padding-left: 15px;
+    padding-top: 10px;
+    padding-bottom: 15px;
+    margin-bottom: 10px;
+    div:nth-child(n) {
+      float: left;
+      width: 30%;
+      margin-right: 12px;
+      text-align: center;
+      color: black;
+      background-size: cover;
+      background: url("../assets/bg_item_recommendation.png") no-repeat -9px -25px;
+      border-radius: 8px;
+      padding-top: 10px;
+      padding-bottom: 10px;
+      font-size: 11px;
+      span:first-child {
+        display: block;
+        margin-bottom: 10px;
+        img {
+          height: 47px;
+        }
+      }
+    }
+  }
+
 }
 
 .sub_title {
@@ -236,33 +316,5 @@ export default {
        background-position: 0 92px;
        background-size: cover;
      }
-}
-
-.me_box {
-  background-color: #Fbfbfb;
-  height: 100%;
-
-  .my_header {
-    padding: 30px 20px;
-    background-color: white;
-
-    .nick_name {
-      margin-top: 5px;
-      font-size: 16px;
-      font-weight: 600;
-      margin-bottom: 5px;
-    }
-  }
-
-  .menu_box {
-    margin: 10px;
-    border-radius: 20px;
-
-    p {
-      display: block;
-      padding: 15px;
-      background-color: white;
-    }
-  }
 }
 </style>

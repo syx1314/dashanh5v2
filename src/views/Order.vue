@@ -58,12 +58,12 @@ export default {
   data() {
     return {
       title: '我的订单',
-      list: null,
+      list: [],
       loading: false,
       finished: false,
       refreshing: false,
       arrowRight,
-      curPage: 1,
+      curPage: 0,
       userid: ''
     }
   },
@@ -79,15 +79,12 @@ export default {
   methods: {
     onLoad() {
       this.userid = local.getUserId()
+      this.curPage = this.curPage + 1
       this.$fetch(`Expressorder/queryOrder?userid=${this.userid}&page=${this.curPage}`, '').then((res) => {
-        if (res && res.errno == 0) {
-          if (!this.list) {
-            this.list = res.data.data
-          } else {
-            this.list = this.list.concat(res.data.data)
-          }
+        if (res && res.errno === 0) {
+          this.list = this.list.concat(res.data.data)
         }
-        this.curPage = this.curPage + 1
+
         if (res.data.current_page ==  res.data.last_page) {
           this.finished = true
         }
@@ -99,7 +96,7 @@ export default {
     onRefresh() {
       console.log('率先你')
       // 清空列表数据
-      this.list = null
+      this.list = []
       this.finished = false
       this.curPage = 0
       // 重新加载数据

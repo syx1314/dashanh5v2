@@ -19,6 +19,7 @@ import titleView from '../components/CommonTitle'
 import Vue from 'vue'
 import { Dialog } from 'vant'
 
+
 export default {
   name: 'MyAddress',
   data() {

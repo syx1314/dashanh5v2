@@ -80,9 +80,12 @@
             <div v-for="(bill,i) in order.bill" :key="i">
               <span>{{bill.type ==1 ? '下单费': '超重/耗材/保价/转寄/加长'}}</span>
               <span>￥{{bill.total_price}}</span>
-              <span v-if="bill.pay_status==1" style="color: red">
+              <span v-if="bill.pay_status==1"
+                    style=" color: red">
                           未支付
-                          <strong style="background-color: red;color: white"
+                          <strong style="display:inline-block; background-color: red;color: white
+                          ;padding-left: 10px;padding-right: 10px;height: 30px;line-height: 30px
+                          ;border-radius: 100px"
                                   @click="topay(bill.id,1)">支付</strong>
                       </span>
               <span v-else-if="bill.pay_status==2" style="color: dodgerblue">已支付</span>
@@ -160,7 +163,7 @@ export default {
             })
             this.order.payTotalPrice = payTotalPrice
             this.order.billTotalPrice = billTotalPrice
-          }else  {
+          } else {
             this.order.billTotalPrice = this.order.totalPrice
           }
         } else {
@@ -382,7 +385,7 @@ export default {
 
         span {
           display: inline-block;
-          width: 45%;
+          width: 43%;
           height: 40px;
           white-space: nowrap;
           line-height: 40px;
