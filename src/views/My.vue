@@ -33,7 +33,8 @@
 </template>
 
 <script>
-import loaclStorage  from '../utils/storage'
+import loaclStorage from '../utils/storage'
+
 export default {
   name: 'My',
   data() {

@@ -7,7 +7,7 @@ if (process.env.NODE_ENV === 'development') {
   axios.defaults.baseURL = '/api'
 } else if (process.env.NODE_ENV === 'production') {
   // 生产环境
-  axios.defaults.baseURL = 'http://81.68.198.45/api.php/' // 这里是线上api请求地址
+  axios.defaults.baseURL = 'http://www.dashans.cn/api.php/' // 这里是线上api请求地址
 }
 // http request 拦截器
 axios.interceptors.request.use((config) => {
