@@ -61,6 +61,11 @@ export default new Router({
       path: '/Bianming',
       name: 'Bianming',
       component: () => import(/* webpackChunkName: 'OrderDetails' */ '@/views/Bianming')
+    },
+    {
+      path: '/Feedback',
+      name: 'Feedback',
+      component: () => import(/* webpackChunkName: 'OrderDetails' */ '@/views/FeedBack')
     }
   ]
 })

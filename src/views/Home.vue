@@ -239,15 +239,15 @@ export default {
     }
   }
   .recomend_box {
+    display: flex;
     overflow: hidden;
-    padding-left: 15px;
     padding-top: 10px;
     padding-bottom: 15px;
     margin-bottom: 10px;
+    justify-content:space-evenly;
+
     div:nth-child(n) {
-      float: left;
-      width: 30%;
-      margin-right: 12px;
+      width: 29.9%;
       text-align: center;
       color: black;
       background-size: cover;

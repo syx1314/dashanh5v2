@@ -1,6 +1,6 @@
 <template>
   <!--主页-->
-  <div>
+  <div class="content">
     <div class="content me_box">
         <div class="my_header van-clearfix">
           <van-image class="fl" :src="headerUrl"
@@ -13,20 +13,14 @@
         <div class="menu_box">
           <p @click="toMyAddress">
             我的地址
-            <span class="fr"> > </span>
+            <span class="fr"> <van-image :src="arrowRightBlack" width="15" height="15"/> </span>
           </p>
-          <p>
-            充值订单
-            <span class="fr"> > </span>
-          </p>
-          <p>
-            联系客服
-            <span class="fr"> > </span>
-          </p>
-          <p>
-            帮助中心
-            <span class="fr"> > </span>
-          </p>
+          <item-text-and-right-arrow text="充值订单"/>
+          <item-text-and-right-arrow text="联系客服"/>
+          <div  @click="toFeedback">
+            <item-text-and-right-arrow text="我有建议"/>
+          </div>
+          <item-text-and-right-arrow text="帮助中心"/>
         </div>
       </div>
   </div>
@@ -35,11 +29,16 @@
 <script>
 import loaclStorage from '../utils/storage'
 
+// eslint-disable-next-line import/extensions
+import ItemTextAndRightArrow from '../components/ItemTextAndRightArrow'
+
 export default {
   name: 'My',
   data() {
     return {
       headerUrl: '../assets/icon_home_new_customer.png',
+      // eslint-disable-next-line global-require
+      arrowRightBlack: require('../assets/icon_arrow_right_black.png'),
       username: '我是一只小小小鸟',
       mobile: '未知',
     }
@@ -53,10 +52,16 @@ export default {
       this.mobile = customer.mobile
     }
   },
+  components: {
+    ItemTextAndRightArrow
+  },
   methods: {
     toMyAddress() {
       this.$router.push({ name: 'MyAddress' })
     },
+    toFeedback() {
+      this.$router.push({ name: 'Feedback' })
+    }
   }
 }
 </script>
@@ -64,7 +69,7 @@ export default {
 <style lang="less" scoped>
 .content {
   background-color: white;
-  height: 100%;
+  height: 100vh;
 }
 .place_older_box {
   height: 45px;
@@ -88,6 +93,7 @@ export default {
   .menu_box {
     margin: 10px;
     border-radius: 20px;
+    overflow: hidden;
 
     p {
       display: block;
